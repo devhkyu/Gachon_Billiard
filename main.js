@@ -1,4 +1,3 @@
-
 var dt = 1/60, R = 0.2;
 var NORMALIZE = 10;
 
@@ -56,9 +55,38 @@ var table, groundBody;
 var object;
 var world;
 
-initCannon();
-init();
-animate();
+var distance;
+var alpha = 0;
+var force = 0;
+var angle = 0;
+
+var paddleHeight = 10;
+var paddleWidth = 75;
+
+window.onload = function start(){
+    initCannon();
+    init();
+    animate();
+    window.onkeydown = function(e){
+        if(e.which == 37){              // Left
+            angle--;
+        }else if(e.which == 39){       // Right
+            angle++;
+        }else if(e.which == 32){        // Space
+            force++;
+        }else{ }
+    }
+    window.onkeyup = function(e){
+        if(e.which == 32){        // Space
+            var impulse = new CANNON.Vec3(Math.cos(angle), 0, Math.sin(angle));
+            alert(impulse)
+            var worldPoint = new CANNON.Vec3(0, 0, 0);
+            sphereBody_w.applyImpulse(impulse, worldPoint);
+            angle = 0;
+            force = 0;
+        }
+    }
+}
 
 function initCannon(){
     // World
@@ -217,20 +245,27 @@ function init() {
     scene.add( light );
 
     // White ball
-    var ballGeo_w = new THREE.SphereGeometry( ballSize, 20, 20 );
-    var ballMaterial_w = new THREE.MeshPhongMaterial( { color: 0xFFFFFF } );
-    sphereMesh_w = new THREE.Mesh( ballGeo_w, ballMaterial_w );
-    sphereMesh_w.castShadow = true;
-    //sphereMesh.receiveShadow = true;
-    scene.add( sphereMesh_w );
+    var loader = new THREE.TextureLoader();
+   loader.load('images/whiteball.png', function ( texture ) {
+       var ballGeo_w = new THREE.SphereGeometry( ballSize, 20, 20 );
+       var ballMaterial_w = new THREE.MeshPhongMaterial({map: texture, overdraw: 0.5});
+       sphereMesh_w = new THREE.Mesh( ballGeo_w, ballMaterial_w );
+       sphereMesh_w.castShadow = true;
+       scene.add( sphereMesh_w );
+   });
+   
+
 
     // Yellow ball 1
-    var ballGeo_y = new THREE.SphereGeometry( ballSize, 20, 20 );
-    var ballMaterial_y = new THREE.MeshPhongMaterial( { color: 0xFFFF00 } );
-    sphereMesh_y = new THREE.Mesh( ballGeo_y, ballMaterial_y );
-    sphereMesh_y.castShadow = true;
-    //sphereMesh.receiveShadow = true;
-    scene.add( sphereMesh_y );
+   loader.load('images/yellowball.png', function ( texture ) {
+       var ballGeo_y = new THREE.SphereGeometry( ballSize, 20, 20 );
+       var ballMaterial_y = new THREE.MeshPhongMaterial({map: texture, overdraw: 0.5});
+       sphereMesh_y = new THREE.Mesh( ballGeo_y, ballMaterial_y );
+      sphereMesh_y.castShadow = true;
+       scene.add( sphereMesh_y );
+   });
+
+  
 
     // Yellow ball 2
     var ballGeo_r1 = new THREE.SphereGeometry( ballSize, 20, 20 );
@@ -279,23 +314,24 @@ function init() {
     table.add(bottomSide);
     ///////////////////////////////////////////////////////
     // Frame of Table(Geometry, Material)
-    var width_frame_geometry = new THREE.BoxGeometry(TABLE_SIDE_SIZE_WIDTH*frame_mult, TABLE_SIDE_SIZE_DEPTH, TABLE_SIZE_HEIGHT+TABLE_SIDE_SIZE_HEIGHT*2+TABLE_SIDE_SIZE_WIDTH*frame_mult*2);
-    var height_frame_geometry = new THREE.BoxGeometry(TABLE_SIZE_WIDTH+TABLE_SIDE_SIZE_WIDTH*2, TABLE_SIDE_SIZE_DEPTH, TABLE_SIDE_SIZE_HEIGHT*frame_mult);
-    var frame_material = new THREE.MeshPhongMaterial({color: 0x463D40});
-
-    // Frame of Table(Mesh, Position)
-    leftFrame = new THREE.Mesh(width_frame_geometry, frame_material);
-    leftFrame.position.x = (leftSide.position.x-TABLE_SIDE_SIZE_WIDTH*frame_mult/2)-TABLE_SIDE_SIZE_WIDTH/2;
-    table.add(leftFrame);
-    rightFrame = new THREE.Mesh(width_frame_geometry, frame_material);
-    rightFrame.position.x = (rightSide.position.x+TABLE_SIDE_SIZE_WIDTH*frame_mult/2)+TABLE_SIDE_SIZE_WIDTH/2;
-    table.add(rightFrame);
-    upFrame = new THREE.Mesh(height_frame_geometry, frame_material);
-    upFrame.position.z = (upSide.position.z+TABLE_SIDE_SIZE_HEIGHT*frame_mult/2)+TABLE_SIDE_SIZE_HEIGHT/2;
-    table.add(upFrame);
-    downFrame = new THREE.Mesh(height_frame_geometry, frame_material);
-    downFrame.position.z = (downSide.position.z-TABLE_SIDE_SIZE_HEIGHT*frame_mult/2)-TABLE_SIDE_SIZE_HEIGHT/2;
-    table.add(downFrame);
+   loader.load('images/table.jpg', function ( texture ) {
+      var width_frame_geometry = new THREE.BoxGeometry(TABLE_SIDE_SIZE_WIDTH*frame_mult, TABLE_SIDE_SIZE_DEPTH, TABLE_SIZE_HEIGHT+TABLE_SIDE_SIZE_HEIGHT*2+TABLE_SIDE_SIZE_WIDTH*frame_mult*2);
+      var height_frame_geometry = new THREE.BoxGeometry(TABLE_SIZE_WIDTH+TABLE_SIDE_SIZE_WIDTH*2, TABLE_SIDE_SIZE_DEPTH, TABLE_SIDE_SIZE_HEIGHT*frame_mult);
+      var frame_material = new THREE.MeshPhongMaterial({map: texture, overdraw: 0.5});
+      // Frame of Table(Mesh, Position)
+       leftFrame = new THREE.Mesh(width_frame_geometry, frame_material);
+      leftFrame.position.x = (leftSide.position.x-TABLE_SIDE_SIZE_WIDTH*frame_mult/2)-TABLE_SIDE_SIZE_WIDTH/2;
+      table.add(leftFrame);
+      rightFrame = new THREE.Mesh(width_frame_geometry, frame_material);
+      rightFrame.position.x = (rightSide.position.x+TABLE_SIDE_SIZE_WIDTH*frame_mult/2)+TABLE_SIDE_SIZE_WIDTH/2;
+      table.add(rightFrame);
+      upFrame = new THREE.Mesh(height_frame_geometry, frame_material);
+      upFrame.position.z = (upSide.position.z+TABLE_SIDE_SIZE_HEIGHT*frame_mult/2)+TABLE_SIDE_SIZE_HEIGHT/2;
+      table.add(upFrame);
+      downFrame = new THREE.Mesh(height_frame_geometry, frame_material);
+      downFrame.position.z = (downSide.position.z-TABLE_SIDE_SIZE_HEIGHT*frame_mult/2)-TABLE_SIDE_SIZE_HEIGHT/2;
+      table.add(downFrame);
+   });
     ///////////////////////////////////////////////////////
     // Column of Table(Geometry, Material)
     var col_geometry = new THREE.BoxGeometry(TABLE_COL_SIZE_WIDTH, TABLE_COL_SIZE_DEPTH, TABLE_COL_SIZE_HEIGHT);
