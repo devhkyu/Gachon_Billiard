@@ -69,63 +69,60 @@ function initCannon(){
     // Materials
     var ballMaterial = new CANNON.Material("ballMaterial");
     var groundMaterial = new CANNON.Material("groundMaterial");
+    var wallMaterial = new CANNON.Material("wallMaterial");
     var bnbContactMaterial = new CANNON.ContactMaterial(ballMaterial, ballMaterial, {
-            friction: 3000000000,
-            restitution: 0.2,
-            contactEquationStiffness: 1e8,
-            contactEquationRelaxation: 3,
-            frictionEquationStiffness: 1e8,
-            frictionEquationRegularizationTime: 3
+            friction: 0.01,
+            restitution: 0.5
     });
     var bngContactMaterial = new CANNON.ContactMaterial(ballMaterial, groundMaterial,{
-        friction: 0,
-        restitution: 0.2,
-        contactEquationStiffness: 1e8,
-        contactEquationRelaxation: 3,
-        frictionEquationStiffness: 1e8,
-        frictionEquationRegularizationTime: 3
+        friction: 0.7,
+        restitution: 0.1
+    })
+    var bnwContactMaterial = new CANNON.ContactMaterial(ballMaterial, wallMaterial,{
+        friction: 0.5,
+        restitution: 0.9
     })
     world.addContactMaterial(bnbContactMaterial);
     world.addContactMaterial(bngContactMaterial);
+    world.addContactMaterial(bnwContactMaterial);
 
+    var ball_param = {
+        mass: 0.25,
+        material: ballMaterial,
+        linearDamping: 0.5,
+        angularDamping: 0.5,
+        allowSleep: true,
+        sleepSpeedLimit: 0.5,
+        sleepTimeLimit: 0.1
+    }
     // Create sphere
     var sphereShape_w = new CANNON.Sphere(ballSize);
-    sphereBody_w = new CANNON.Body({
-        mass: 0.25,
-        material: ballMaterial
-    });
+    sphereBody_w = new CANNON.Body(ball_param);
     sphereBody_w.addShape(sphereShape_w);
-    sphereBody_w.position.set(0, 0, 0);
+    sphereBody_w.position.set(4, 1.4, 0);
+    sphereBody_w.applyImpulse(new CANNON.Vec3(-5,0,0),new CANNON.Vec3(4,1.3,0))
     world.addBody(sphereBody_w);
+
 
     // Create sphere
     var sphereShape_y = new CANNON.Sphere(ballSize);
-    sphereBody_y = new CANNON.Body({
-        mass: 0.25,
-        material: ballMaterial
-    });
+    sphereBody_y = new CANNON.Body(ball_param);
     sphereBody_y.addShape(sphereShape_y);
-    sphereBody_y.position.set(0.01, 4, 0.01);
+    sphereBody_y.position.set(0, 1.4, 0);
     world.addBody(sphereBody_y);
 
     // Create sphere
     var sphereShape_r1 = new CANNON.Sphere(ballSize);
-    sphereBody_r1 = new CANNON.Body({
-        mass: 0.25,
-        material: ballMaterial
-    });
+    sphereBody_r1 = new CANNON.Body(ball_param);
     sphereBody_r1.addShape(sphereShape_r1);
-    sphereBody_r1.position.set(0.01, 6, 0);
+    sphereBody_r1.position.set(0, 1.4, 4);
     world.addBody(sphereBody_r1);
 
     // Create sphere
     var sphereShape_r2 = new CANNON.Sphere(ballSize);
-    sphereBody_r2 = new CANNON.Body({
-        mass: 0.25,
-        material: ballMaterial
-    });
+    sphereBody_r2 = new CANNON.Body(ball_param);
     sphereBody_r2.addShape(sphereShape_r2);
-    sphereBody_r2.position.set(0, 9, 0);
+    sphereBody_r2.position.set(4, 1.4, 4);
     world.addBody(sphereBody_r2);
 
     // Physics table
@@ -138,16 +135,16 @@ function initCannon(){
     groundBody.addShape(table_phys);
     
     left_groundBody = new CANNON.Body({ mass: 0,
-        material: groundMaterial });
+        material: wallMaterial  });
     left_groundBody.addShape(table_side_width_phys);
     right_groundBody = new CANNON.Body({ mass: 0,
-        material: groundMaterial });
+        material: wallMaterial  });
     right_groundBody.addShape(table_side_width_phys);
     up_groundBody = new CANNON.Body({ mass: 0,
-        material: groundMaterial });
+        material: wallMaterial  });
     up_groundBody.addShape(table_side_height_phys);
     down_groundBody = new CANNON.Body({ mass: 0,
-        material: groundMaterial });
+        material: wallMaterial  });
     down_groundBody.addShape(table_side_height_phys);
 
     left_groundBody.position.set(-(TABLE_SIZE_WIDTH/2 + TABLE_SIDE_SIZE_WIDTH/2),-0.5,0);
