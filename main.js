@@ -67,9 +67,9 @@ function initCannon(){
     world.gravity.set(0, -9.82, 0);
     
     // Materials
-    var physicsMaterial = new CANNON.Material("groundMaterial");
-    var sliperyMaterial = new CANNON.Material("slipMaterial");
-    var sliperyContactMaterial = new CANNON.ContactMaterial(physicsMaterial, sliperyMaterial, {
+    var ballMaterial = new CANNON.Material("ballMaterial");
+    var groundMaterial = new CANNON.Material("groundMaterial");
+    var bnbContactMaterial = new CANNON.ContactMaterial(ballMaterial, ballMaterial, {
             friction: 3000000000,
             restitution: 0.2,
             contactEquationStiffness: 1e8,
@@ -77,7 +77,7 @@ function initCannon(){
             frictionEquationStiffness: 1e8,
             frictionEquationRegularizationTime: 3
     });
-    var physicsContactMaterial = new CANNON.ContactMaterial(physicsMaterial, physicsMaterial,{
+    var bngContactMaterial = new CANNON.ContactMaterial(ballMaterial, groundMaterial,{
         friction: 0,
         restitution: 0.2,
         contactEquationStiffness: 1e8,
@@ -85,14 +85,14 @@ function initCannon(){
         frictionEquationStiffness: 1e8,
         frictionEquationRegularizationTime: 3
     })
-    world.addContactMaterial(sliperyContactMaterial);
-    world.addContactMaterial(physicsContactMaterial);
+    world.addContactMaterial(bnbContactMaterial);
+    world.addContactMaterial(bngContactMaterial);
 
     // Create sphere
     var sphereShape_w = new CANNON.Sphere(ballSize);
     sphereBody_w = new CANNON.Body({
         mass: 0.25,
-        material: physicsMaterial
+        material: ballMaterial
     });
     sphereBody_w.addShape(sphereShape_w);
     sphereBody_w.position.set(0, 0, 0);
@@ -102,7 +102,7 @@ function initCannon(){
     var sphereShape_y = new CANNON.Sphere(ballSize);
     sphereBody_y = new CANNON.Body({
         mass: 0.25,
-        material: physicsMaterial
+        material: ballMaterial
     });
     sphereBody_y.addShape(sphereShape_y);
     sphereBody_y.position.set(0.01, 4, 0.01);
@@ -112,7 +112,7 @@ function initCannon(){
     var sphereShape_r1 = new CANNON.Sphere(ballSize);
     sphereBody_r1 = new CANNON.Body({
         mass: 0.25,
-        material: physicsMaterial
+        material: ballMaterial
     });
     sphereBody_r1.addShape(sphereShape_r1);
     sphereBody_r1.position.set(0.01, 6, 0);
@@ -122,7 +122,7 @@ function initCannon(){
     var sphereShape_r2 = new CANNON.Sphere(ballSize);
     sphereBody_r2 = new CANNON.Body({
         mass: 0.25,
-        material: physicsMaterial
+        material: ballMaterial
     });
     sphereBody_r2.addShape(sphereShape_r2);
     sphereBody_r2.position.set(0, 9, 0);
@@ -134,20 +134,20 @@ function initCannon(){
     var table_side_height_phys = new CANNON.Box(new CANNON.Vec3(TABLE_GROUND_WIDTH, TABLE_SIDE_GROUND_DEPTH,TABLE_SIDE_GROUND_HEIGHT));
     
     groundBody = new CANNON.Body({ mass: 0,
-        material: sliperyMaterial });
+        material: groundMaterial });
     groundBody.addShape(table_phys);
     
     left_groundBody = new CANNON.Body({ mass: 0,
-        material: physicsMaterial });
+        material: groundMaterial });
     left_groundBody.addShape(table_side_width_phys);
     right_groundBody = new CANNON.Body({ mass: 0,
-        material: physicsMaterial });
+        material: groundMaterial });
     right_groundBody.addShape(table_side_width_phys);
     up_groundBody = new CANNON.Body({ mass: 0,
-        material: physicsMaterial });
+        material: groundMaterial });
     up_groundBody.addShape(table_side_height_phys);
     down_groundBody = new CANNON.Body({ mass: 0,
-        material: physicsMaterial });
+        material: groundMaterial });
     down_groundBody.addShape(table_side_height_phys);
 
     left_groundBody.position.set(-(TABLE_SIZE_WIDTH/2 + TABLE_SIDE_SIZE_WIDTH/2),-0.5,0);
