@@ -56,9 +56,45 @@ var table, groundBody;
 var object;
 var world;
 
-initCannon();
-init();
-animate();
+var camera, scene, renderer;
+var sphereMesh_w, sphereBody_w;
+var sphereMesh_y, sphereBody_y;
+var sphereMesh_r1, sphereBody_r1;
+var sphereMesh_r2, sphereBody_r2;
+var table, groundBody;
+var world;
+
+var distance;
+var alpha = 0;
+var force = 0;
+var angle = 0;
+
+var paddleHeight = 10;
+var paddleWidth = 75;
+
+window.onload = function start(){
+    initCannon();
+    init();
+    animate();
+    window.onkeydown = function(e){
+        if(e.which == 37){              // Left
+            angle--;
+        }else if(e.which == 39){       // Right
+            angle++;
+        }else if(e.which == 32){        // Space
+            force++;
+        }else{ }
+    }
+    window.onkeyup = function(e){
+        if(e.which == 32){        // Space
+            var impulse = new CANNON.Vec3(Math.cos(angle), 0, Math.sin(angle));
+            var worldPoint = new CANNON.Vec3(0, 0, 0);
+            sphereBody_w.applyImpulse(impulse, worldPoint);
+            angle = 0;
+            force = 0;
+        }
+    }
+}
 
 function initCannon(){
     // World
