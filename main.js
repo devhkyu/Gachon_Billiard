@@ -61,6 +61,7 @@ var sphereMesh_w, sphereBody_w;
 var sphereMesh_y, sphereBody_y;
 var sphereMesh_r1, sphereBody_r1;
 var sphereMesh_r2, sphereBody_r2;
+var guideLineGeometry, guideLine;
 var table, groundBody;
 var world;
 
@@ -78,17 +79,20 @@ window.onload = function start(){
     animate();
     window.onkeydown = function(e){
         if(e.which == 37){              // Left
-            angle--;
+            angle-= 0.1;
         }else if(e.which == 39){       // Right
-            angle++;
+            angle+= 0.1;
         }else if(e.which == 32){        // Space
             force++;
+            console.log(force)
         }else{ }
     }
     window.onkeyup = function(e){
         if(e.which == 32){        // Space
-            var impulse = new CANNON.Vec3(Math.cos(angle), 0, Math.sin(angle));
-            var worldPoint = new CANNON.Vec3(0, 0, 0);
+            var impulse = new CANNON.Vec3(Math.cos(angle)*force, 0.0, Math.sin(angle)*force);
+            var worldPoint = sphereBody_w.position
+            worldPoint.y = 1.2  
+            console.log(impulse)
             sphereBody_w.applyImpulse(impulse, worldPoint);
             angle = 0;
             force = 0;
@@ -107,16 +111,16 @@ function initCannon(){
     var groundMaterial = new CANNON.Material("groundMaterial");
     var wallMaterial = new CANNON.Material("wallMaterial");
     var bnbContactMaterial = new CANNON.ContactMaterial(ballMaterial, ballMaterial, {
-            friction: 0.01,
-            restitution: 0.5
+            friction: 0.1,
+            restitution: 0.85
     });
     var bngContactMaterial = new CANNON.ContactMaterial(ballMaterial, groundMaterial,{
         friction: 0.7,
-        restitution: 0.1
+        restitution: 0
     })
     var bnwContactMaterial = new CANNON.ContactMaterial(ballMaterial, wallMaterial,{
-        friction: 0.5,
-        restitution: 0.9
+        friction: 0.1,
+        restitution: 0.85
     })
     world.addContactMaterial(bnbContactMaterial);
     world.addContactMaterial(bngContactMaterial);
@@ -254,7 +258,7 @@ function init() {
 
     // White ball
     var ballGeo_w = new THREE.SphereGeometry( ballSize, 20, 20 );
-    var ballMaterial_w = new THREE.MeshPhongMaterial( { color: 0xFFFFFF } );
+    var ballMaterial_w = new THREE.MeshPhongMaterial( { color: 0xFFFFFF,specular:0x777777, shininess: 50, reflectivity: 1.0} );
     sphereMesh_w = new THREE.Mesh( ballGeo_w, ballMaterial_w );
     sphereMesh_w.castShadow = true;
     //sphereMesh.receiveShadow = true;
@@ -262,7 +266,7 @@ function init() {
 
     // Yellow ball 1
     var ballGeo_y = new THREE.SphereGeometry( ballSize, 20, 20 );
-    var ballMaterial_y = new THREE.MeshPhongMaterial( { color: 0xFFFF00 } );
+    var ballMaterial_y = new THREE.MeshPhongMaterial( { color: 0xFFFF00,specular:0x777777, shininess: 50, reflectivity: 1.0 } );
     sphereMesh_y = new THREE.Mesh( ballGeo_y, ballMaterial_y );
     sphereMesh_y.castShadow = true;
     //sphereMesh.receiveShadow = true;
@@ -270,7 +274,7 @@ function init() {
 
     // Yellow ball 2
     var ballGeo_r1 = new THREE.SphereGeometry( ballSize, 20, 20 );
-    var ballMaterial_r1 = new THREE.MeshPhongMaterial( { color: 0xFF0000 } );
+    var ballMaterial_r1 = new THREE.MeshPhongMaterial( { color: 0xFF0000,specular:0x777777, shininess: 50, reflectivity: 1.0 } );
     sphereMesh_r1 = new THREE.Mesh( ballGeo_r1, ballMaterial_r1 );
     sphereMesh_r1.castShadow = true;
     //sphereMesh.receiveShadow = true;
@@ -278,11 +282,24 @@ function init() {
 
     // Red ball 1
     var ballGeo_r2 = new THREE.SphereGeometry( ballSize, 20, 20 );
-    var ballMaterial_r2 = new THREE.MeshPhongMaterial( { color: 0xFF0000 } );
+    var ballMaterial_r2 = new THREE.MeshPhongMaterial( { color: 0xFF0000,specular:0x777777, shininess: 50, reflectivity: 1.0 } );
     sphereMesh_r2 = new THREE.Mesh( ballGeo_r2, ballMaterial_r2 );
     sphereMesh_r2.castShadow = true;
     //sphereMesh.receiveShadow = true;
     scene.add( sphereMesh_r2 );
+
+    var guideLineMeterial = new THREE.LineDashedMaterial( {
+        color: 0xffffff,
+        linewidth: 1,
+        scale: 1,
+        dashSize: 0.3,
+        gapSize: 0.1
+    } );
+    guideLineGeometry = new THREE.Geometry({verticesNeedUpdate: true});
+    guideLineGeometry.computeLineDistances();
+    guideLineGeometry.vertices.push(sphereBody_w.position,new CANNON.Vec3(Math.cos(angle)*force, 0, Math.sin(angle)*force));
+    guideLine = new THREE.Line(guideLineGeometry,guideLineMeterial)
+    scene.add( guideLine );
 
     ///////////////////////////////////////////////////////
     // Main Table Board(Geometry, Material)
@@ -340,6 +357,7 @@ function init() {
     column = new THREE.Mesh(col_geometry, col_material);
     column.position.y = bottomSide.position.y - TABLE_COL_SIZE_DEPTH/2;
     table.add(column);
+    table.position.copy(groundBody.position)
     ///////////////////////////////////////////////////////
     // Add table
     scene.add(table);
@@ -385,6 +403,11 @@ function render() {
     sphereMesh_y.position.copy(sphereBody_y.position);
     sphereMesh_r1.position.copy(sphereBody_r1.position);
     sphereMesh_r2.position.copy(sphereBody_r2.position);
-    table.position.copy(groundBody.position);
+    var y = 1.3
+    if(sphereBody_w.velocity.z + sphereBody_w.velocity.x > 0.005) y = -1
+    guideLine.geometry.vertices[0] = new CANNON.Vec3(sphereBody_w.position.x,y,sphereBody_w.position.z)
+    guideLine.geometry.vertices[1] = new CANNON.Vec3(sphereBody_w.position.x+Math.cos(angle)*3, y, sphereBody_w.position.z+Math.sin(angle)*3)
+    guideLine.geometry.computeLineDistances();
+    guideLine.geometry.verticesNeedUpdate = true;
     renderer.render( scene, camera );
 }
