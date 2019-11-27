@@ -98,7 +98,10 @@ window.onload = function start(){
         if(gaming == 0){
             if(e.which == 32){        // Space
                 var impulse = new CANNON.Vec3(Math.cos(angle), 0.0, Math.sin(angle));
-                var worldPoint = sphereBody_w.position
+                if(now_turn == 0)
+                    var worldPoint = sphereBody_w.position;
+                else
+                    var worldPoint = sphereBody_y.position;
                 
                 impulse.normalize()
                 impulse.scale(0.665,impulse)
