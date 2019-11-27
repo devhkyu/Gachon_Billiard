@@ -73,31 +73,52 @@ var angle = 0;
 var paddleHeight = 10;
 var paddleWidth = 75;
 
+var collisionInfo = [[0,0,0],[0,0,0]]//contect info w([0]),y([1]) ball [r1,r2,otherball]
+var score = [0,0]//score[w,y]
+var now_turn = 0
+var gaming = 0
+
 window.onload = function start(){
     initCannon();
     init();
     animate();
     window.onkeydown = function(e){
-        if(e.which == 37){              // Left
-            angle-= 0.1;
-        }else if(e.which == 39){       // Right
-            angle+= 0.1;
-        }else if(e.which == 32){        // Space
-            force++;
-            console.log(force)
-        }else{ }
+        if(gaming == 0){
+            if(e.which == 37){              // Left
+                angle-= 0.5/Math.PI;
+            }else if(e.which == 39){       // Right
+                angle+= 0.5/Math.PI;
+            }else if(e.which == 32){        // Space
+                force++;
+                console.log(force)
+            }else{ }
+        }
     }
     window.onkeyup = function(e){
-        if(e.which == 32){        // Space
-            var impulse = new CANNON.Vec3(Math.cos(angle)*force, 0.0, Math.sin(angle)*force);
-            var worldPoint = sphereBody_w.position
-            worldPoint.y = 1.2  
-            console.log(impulse)
-            var impulse = new CANNON.Vec3(Math.cos(angle), 0, Math.sin(angle));
-            var worldPoint = new CANNON.Vec3(0, 0, 0);
-            sphereBody_w.applyImpulse(impulse, worldPoint);
-            angle = 0;
-            force = 0;
+        if(gaming == 0){
+            if(e.which == 32){        // Space
+                var impulse = new CANNON.Vec3(Math.cos(angle), 0.0, Math.sin(angle));
+                var worldPoint = sphereBody_w.position
+                
+                impulse.normalize()
+                impulse.scale(0.665,impulse)
+                worldPoint.vsub(impulse,worldPoint)
+
+                var forceVec = new CANNON.Vec3(Math.cos(angle), 0.0, Math.sin(angle));
+                forceVec.normalize()
+                forceVec.scale(force,forceVec)
+
+                console.log(forceVec)
+                worldPoint.y = 1.154
+                //console.log(worldPoint)
+                if(now_turn == 0){
+                    sphereBody_w.applyImpulse(forceVec, worldPoint);
+                }else{
+                    sphereBody_y.applyImpulse(forceVec, worldPoint);
+                }
+                angle = 0;
+                force = 0;
+            }
         }
     }
 }
@@ -144,6 +165,20 @@ function initCannon(){
     sphereBody_w.position.set(4, 1.4, 0);
     world.addBody(sphereBody_w);
 
+    sphereBody_w.addEventListener("collide",function(e){ 
+        if(e.body == sphereBody_r1){
+            console.log("collision white and red1")
+            collisionInfo[0][0] = 1
+        }
+        if(e.body == sphereBody_r2){
+            console.log("collision white and red2")
+            collisionInfo[0][1] = 1
+        }
+        if(e.body == sphereBody_y){
+            console.log("collision white and yellow")
+            collisionInfo[0][2] = 1
+        }
+    });
 
     // Create sphere
     var sphereShape_y = new CANNON.Sphere(ballSize);
@@ -152,6 +187,21 @@ function initCannon(){
     sphereBody_y.position.set(0, 1.4, 0);
     world.addBody(sphereBody_y);
 
+
+    sphereBody_y.addEventListener("collide",function(e){ 
+        if(e.body == sphereBody_r1){
+            console.log("collision yellow and red1")
+            collisionInfo[1][0] = 1
+        }
+        if(e.body == sphereBody_r2){
+            console.log("collision yellow and red2")
+            collisionInfo[1][1] = 1
+        }
+        if(e.body == sphereBody_w){
+            console.log("collision white and yellow")
+            collisionInfo[1][2] = 1
+        }
+    });
     // Create sphere
     var sphereShape_r1 = new CANNON.Sphere(ballSize);
     sphereBody_r1 = new CANNON.Body(ball_param);
@@ -256,6 +306,17 @@ function init() {
     light.shadowDarkness = 0.5;
 
     scene.add( light );
+
+    //SpotLight( color : Integer, intensity : Float, distance : Float, angle : Radians, penumbra : Float, decay : Float )
+    var spotLight1 = new THREE.SpotLight( 0xFFFFFF, 1.5);
+    spotLight1.position.set( 6, 12, 0 );
+    spotLight1.target.position.set( 6, 0, 0 );
+    var spotLight2 = new THREE.SpotLight( 0xFFFFFF, 1.5 );
+    spotLight2.position.set( -6, 12, 0 );
+    spotLight2.target.position.set( -6, 0, 0 );
+    scene.add( spotLight2.target);
+    scene.add( spotLight1 );
+    scene.add( spotLight2 );
 
     // White ball
     var ballGeo_w = new THREE.SphereGeometry( ballSize, 20, 20 );
@@ -405,9 +466,45 @@ function render() {
     sphereMesh_r1.position.copy(sphereBody_r1.position);
     sphereMesh_r2.position.copy(sphereBody_r2.position);
     var y = 1.3
-    if(Math.abs(sphereBody_w.velocity.z) + Math.abs(sphereBody_w.velocity.x) > 0.005) y = -1
-    guideLine.geometry.vertices[0] = new CANNON.Vec3(sphereBody_w.position.x,y,sphereBody_w.position.z)
-    guideLine.geometry.vertices[1] = new CANNON.Vec3(sphereBody_w.position.x+Math.cos(angle)*3, y, sphereBody_w.position.z+Math.sin(angle)*3)
+    if(Math.abs(sphereBody_w.velocity.z) + Math.abs(sphereBody_w.velocity.x) > 0.05 || Math.abs(sphereBody_y.velocity.z) + Math.abs(sphereBody_y.velocity.x) > 0.05
+        || Math.abs(sphereBody_r1.velocity.z) + Math.abs(sphereBody_r1.velocity.x) > 0.05 || Math.abs(sphereBody_r2.velocity.z) + Math.abs(sphereBody_r2.velocity.x) > 0.05){
+        y = -1
+        gaming = 1
+    }else{
+        y = 1.3
+        if(gaming == 1){
+            //scoreing
+            if(collisionInfo[now_turn][2] == 1 || (collisionInfo[now_turn][0] == 0 && collisionInfo[now_turn][1] == 0 && collisionInfo[now_turn][2] == 0)){
+                score[now_turn] -= 10
+                if(now_turn == 1 ){
+                    now_turn = 0
+                }else{
+                    now_turn = 1
+                }
+            }else{
+                if(collisionInfo[now_turn][0] == 1 && collisionInfo[now_turn][1] == 1){
+                    score[now_turn] += 10   
+                }else{
+                    if(now_turn == 1 ){
+                        now_turn = 0
+                    }else{
+                        now_turn = 1
+                    }
+                }
+            }
+            collisionInfo = [[0,0,0],[0,0,0]]
+            console.log(score)
+        }
+        gaming = 0
+    }
+    var guideLinePosition
+    if(now_turn == 0){
+        guideLinePosition = sphereBody_w.position
+    }else{
+        guideLinePosition = sphereBody_y.position
+    }
+    guideLine.geometry.vertices[0] = new CANNON.Vec3(guideLinePosition.x,y,guideLinePosition.z)
+    guideLine.geometry.vertices[1] = new CANNON.Vec3(guideLinePosition.x+Math.cos(angle)*3, y, guideLinePosition.z+Math.sin(angle)*3)
     guideLine.geometry.computeLineDistances();
     guideLine.geometry.verticesNeedUpdate = true;
     renderer.render( scene, camera );
