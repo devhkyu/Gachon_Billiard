@@ -93,6 +93,8 @@ window.onload = function start(){
             var worldPoint = sphereBody_w.position
             worldPoint.y = 1.2  
             console.log(impulse)
+            var impulse = new CANNON.Vec3(Math.cos(angle), 0, Math.sin(angle));
+            var worldPoint = new CANNON.Vec3(0, 0, 0);
             sphereBody_w.applyImpulse(impulse, worldPoint);
             angle = 0;
             force = 0;
@@ -140,7 +142,6 @@ function initCannon(){
     sphereBody_w = new CANNON.Body(ball_param);
     sphereBody_w.addShape(sphereShape_w);
     sphereBody_w.position.set(4, 1.4, 0);
-    sphereBody_w.applyImpulse(new CANNON.Vec3(-5,0,0),new CANNON.Vec3(4,1.3,0))
     world.addBody(sphereBody_w);
 
 
@@ -404,7 +405,7 @@ function render() {
     sphereMesh_r1.position.copy(sphereBody_r1.position);
     sphereMesh_r2.position.copy(sphereBody_r2.position);
     var y = 1.3
-    if(sphereBody_w.velocity.z + sphereBody_w.velocity.x > 0.005) y = -1
+    if(Math.abs(sphereBody_w.velocity.z) + Math.abs(sphereBody_w.velocity.x) > 0.005) y = -1
     guideLine.geometry.vertices[0] = new CANNON.Vec3(sphereBody_w.position.x,y,sphereBody_w.position.z)
     guideLine.geometry.vertices[1] = new CANNON.Vec3(sphereBody_w.position.x+Math.cos(angle)*3, y, sphereBody_w.position.z+Math.sin(angle)*3)
     guideLine.geometry.computeLineDistances();
