@@ -84,9 +84,9 @@ window.onload = function start(){
     window.onkeydown = function(e){
         if(gaming == 0){
             if(e.which == 37){              // Left
-                angle-= 0.5/Math.PI;
+                angle-= 0.1/Math.PI;
             }else if(e.which == 39){       // Right
-                angle+= 0.5/Math.PI;
+                angle+= 0.1/Math.PI;
             }else if(e.which == 32){        // Space
                 force++;
                 console.log(force)
