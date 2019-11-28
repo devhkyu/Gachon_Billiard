@@ -282,42 +282,15 @@ function init() {
 
     controls.keys = [ 65, 83, 68 ];
 
-
-    // lights
-    var light, materials;
-    scene.add( new THREE.AmbientLight( 0x000000 ) );
-
-    light = new THREE.DirectionalLight( 0xffffff, 1.1 );
-    var d = 10;
-
-    light.position.set( 5, 5, 15 );
-
-    light.castShadow = true;
-    // light.shadowCameraVisible = true;
-
-    light.shadowMapWidth = 1024*2;
-    light.shadowMapHeight = 1024*2;
-
-    light.shadowCameraLeft = -d;
-    light.shadowCameraRight = d;
-    light.shadowCameraTop = d;
-    light.shadowCameraBottom = -d;
-
-    light.shadowCameraFar = 3*d;
-    light.shadowCameraNear = d;
-    light.shadowDarkness = 0.5;
-
-    scene.add( light );
-
     //SpotLight( color : Integer, intensity : Float, distance : Float, angle : Radians, penumbra : Float, decay : Float )
-    var spotLight1 = new THREE.SpotLight( 0xFFFFFF, 1.5);
+    var spotLight1 = new THREE.SpotLight( 0xFFFFFF, 2);
     spotLight1.position.set( 6, 12, 0 );
     spotLight1.target.position.set( 6, 0, 0 );
    //spotLight1.target.updateMatrixWorld();
    scene.add( spotLight1.target);
    spotLight1.castShadow = true;
    //spotLight1.shadowCameraVisible = true;
-    var spotLight2 = new THREE.SpotLight( 0xFFFFFF, 1.5 );
+    var spotLight2 = new THREE.SpotLight( 0xFFFFFF, 2);
     spotLight2.position.set( -6, 12, 0 );
     spotLight2.target.position.set( -6, 0, 0 );
     scene.add( spotLight2.target);
@@ -437,9 +410,9 @@ function init() {
     ///////////////////////////////////////////////////////
     // Add table
     scene.add(table);
+    table.position.copy(groundBody.position)
    });
 
-    table.geometry.position.copy(groundBody.position)
     ///////////////////////////////////////////////////////
     
 
