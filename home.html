@@ -23,10 +23,41 @@
                 text-decoration: underline;
                 cursor: pointer;
             }
+            #force_div {
+                position: absolute;
+                color: #FFFFFF;
+                width: 100%;
+                height: 5%;
+                text-align: center;
+                padding-top: 2%;
+                vertical-align: center;
+            }
+            #p1_score_div {
+                position: absolute;
+                color: #FFFFFF;
+                width: 100%;
+                height: 5%;
+                text-align: right;
+                padding-top: 2%;
+                vertical-align: center;
+            }
+            #p2_score_div {
+                position: absolute;
+                color: #FFFFFF;
+                width: 100%;
+                height: 5%;
+                text-align: right;
+                padding-top: 3%;
+                vertical-align: center;
+            }
         </style>
     </head>
 
     <body>
+        <div id="p1_score_div"></div>
+        <div id="p2_score_div"></div>
+        <div id="force_div"></div>
+
         <script src="lib/Three.js"></script>
         <script src="lib/TrackballControls.js"></script>
         <script src="lib/Detector.js"></script>

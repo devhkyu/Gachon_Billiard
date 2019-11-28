@@ -415,7 +415,6 @@ function init() {
     table.position.copy(groundBody.position)
     });
     ///////////////////////////////////////////////////////
-    
 
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -448,6 +447,9 @@ function animate() {
     controls.update();
     world.step(dt);
     var t = world.time;
+    document.getElementById('force_div').innerHTML = "Force: " + force;
+    document.getElementById('p1_score_div').innerHTML = "[P1] " + score[0] + " pts"
+    document.getElementById('p2_score_div').innerHTML = "[P2] " + score[1] + " pts"
     render();
 }
 
