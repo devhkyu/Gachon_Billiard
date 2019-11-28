@@ -104,14 +104,13 @@ window.onload = function start(){
                 
                 impulse.normalize()
                 impulse.scale(0.665,impulse)
-                worldPoint.vsub(impulse,worldPoint)
-
+                
                 var forceVec = new CANNON.Vec3(Math.cos(angle), 0.0, Math.sin(angle));
                 forceVec.normalize()
                 forceVec.scale(force,forceVec)
+                worldPoint.y = 1.154
 
                 console.log(forceVec)
-                worldPoint.y = 1.154
                 //console.log(worldPoint)
                 if(now_turn == 0){
                     sphereBody_w.applyImpulse(forceVec, worldPoint);
@@ -129,7 +128,7 @@ function initCannon(){
     // World
     world = new CANNON.World();
     world.broadphase = new CANNON.NaiveBroadphase();
-    world.gravity.set(0, -9.82, 0);
+    world.gravity.set(0, -9.87, 0);
     
     // Materials
     var ballMaterial = new CANNON.Material("ballMaterial");
@@ -137,15 +136,15 @@ function initCannon(){
     var wallMaterial = new CANNON.Material("wallMaterial");
     var bnbContactMaterial = new CANNON.ContactMaterial(ballMaterial, ballMaterial, {
             friction: 0.1,
-            restitution: 0.85
+            restitution: 0.5
     });
     var bngContactMaterial = new CANNON.ContactMaterial(ballMaterial, groundMaterial,{
-        friction: 0.7,
-        restitution: 0
+        friction: 0.001,
+        restitution: 0.3
     })
     var bnwContactMaterial = new CANNON.ContactMaterial(ballMaterial, wallMaterial,{
         friction: 0.1,
-        restitution: 0.85
+        restitution: 0.5
     })
     world.addContactMaterial(bnbContactMaterial);
     world.addContactMaterial(bngContactMaterial);
@@ -494,6 +493,7 @@ function render() {
     }else{
         guideLinePosition = sphereBody_y.position
     }
+
     guideLine.geometry.vertices[0] = new CANNON.Vec3(guideLinePosition.x,y,guideLinePosition.z)
     guideLine.geometry.vertices[1] = new CANNON.Vec3(guideLinePosition.x+Math.cos(angle)*3, y, guideLinePosition.z+Math.sin(angle)*3)
     guideLine.geometry.computeLineDistances();
