@@ -67,6 +67,7 @@ var world;
 var distance;
 var alpha = 0;
 var force = 0;
+var force_threshold = 17;
 var angle = 0;
 
 var paddleHeight = 10;
@@ -88,8 +89,10 @@ window.onload = function start(){
             }else if(e.which == 39){       // Right
                 angle+= 0.1/Math.PI;
             }else if(e.which == 32){        // Space
-                force++;
-                console.log(force)
+                if(force <= force_threshold){
+                    force++;
+                    console.log(force)
+                }
             }else{ }
         }
     }
@@ -281,19 +284,19 @@ function init() {
 
     controls.keys = [ 65, 83, 68 ];
 
-    //SpotLight( color : Integer, intensity : Float, distance : Float, angle : Radians, penumbra : Float, decay : Float )
+    // SpotLight( color : Integer, intensity : Float, distance : Float, angle : Radians, penumbra : Float, decay : Float )
     var spotLight1 = new THREE.SpotLight( 0xFFFFFF, 2);
     spotLight1.position.set( 6, 12, 0 );
     spotLight1.target.position.set( 6, 0, 0 );
-   //spotLight1.target.updateMatrixWorld();
-   scene.add( spotLight1.target);
-   spotLight1.castShadow = true;
-   //spotLight1.shadowCameraVisible = true;
+    // spotLight1.target.updateMatrixWorld();
+    scene.add( spotLight1.target);
+    spotLight1.castShadow = true;
+    // spotLight1.shadowCameraVisible = true;
     var spotLight2 = new THREE.SpotLight( 0xFFFFFF, 2);
     spotLight2.position.set( -6, 12, 0 );
     spotLight2.target.position.set( -6, 0, 0 );
     scene.add( spotLight2.target);
-   spotLight1.castShadow = true;
+    spotLight1.castShadow = true;
     scene.add( spotLight1 );
     scene.add( spotLight2 );
 
@@ -345,13 +348,13 @@ function init() {
     ///////////////////////////////////////////////////////
     var loader = new THREE.TextureLoader();
     // Main Table Board(Geometry, Material)
-   loader.load('images/blue.jpg', function ( texture ) {
+    loader.load('images/blue.jpg', function ( texture ) {
     var board_geometry = new THREE.BoxGeometry(TABLE_SIZE_WIDTH, TABLE_SIZE_DEPTH, TABLE_SIZE_HEIGHT);
     var board_material = new THREE.MeshPhongMaterial({color: 0x2385E0, map: texture, overdraw: 0.5});
     // Main Table Board(Mesh)
     table = new THREE.Mesh(board_geometry, board_material);
     table.receiveShadow = true;
-   ///////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////
     // Side of Table(Geometry, Material)
     var width_side_geometry = new THREE.BoxGeometry(TABLE_SIDE_SIZE_WIDTH, TABLE_SIDE_SIZE_DEPTH, TABLE_SIZE_HEIGHT+TABLE_SIDE_SIZE_HEIGHT*2);
     var height_side_geometry = new THREE.BoxGeometry(TABLE_SIZE_WIDTH, TABLE_SIDE_SIZE_DEPTH, TABLE_SIDE_SIZE_HEIGHT);
@@ -374,33 +377,33 @@ function init() {
     bottomSide = new THREE.Mesh(bottom_side_geometry, side_material);
     bottomSide.position.y = -TABLE_SIZE_DEPTH/2;
     table.add(bottomSide);
-   });
+    });
 
     ///////////////////////////////////////////////////////
-     // Frame of Table(Geometry, Material)
-   loader.load('images/table.jpg', function ( texture ) {
-     var frame_mult = 2;
-      var width_frame_geometry = new THREE.BoxGeometry(TABLE_SIDE_SIZE_WIDTH*frame_mult, TABLE_SIDE_SIZE_DEPTH, TABLE_SIZE_HEIGHT+TABLE_SIDE_SIZE_HEIGHT*2+TABLE_SIDE_SIZE_WIDTH*frame_mult*2);
-      var height_frame_geometry = new THREE.BoxGeometry(TABLE_SIZE_WIDTH+TABLE_SIDE_SIZE_WIDTH*2, TABLE_SIDE_SIZE_DEPTH, TABLE_SIDE_SIZE_HEIGHT*frame_mult);
-      var frame_material = new THREE.MeshPhongMaterial({map: texture, overdraw: 0.5});
-      // Frame of Table(Mesh, Position)
-       leftFrame = new THREE.Mesh(width_frame_geometry, frame_material);
-      leftFrame.position.x = (leftSide.position.x-TABLE_SIDE_SIZE_WIDTH*frame_mult/2)-TABLE_SIDE_SIZE_WIDTH/2;
-      table.add(leftFrame);
-      rightFrame = new THREE.Mesh(width_frame_geometry, frame_material);
-      rightFrame.position.x = (rightSide.position.x+TABLE_SIDE_SIZE_WIDTH*frame_mult/2)+TABLE_SIDE_SIZE_WIDTH/2;
-      table.add(rightFrame);
-      upFrame = new THREE.Mesh(height_frame_geometry, frame_material);
-      upFrame.position.z = (upSide.position.z+TABLE_SIDE_SIZE_HEIGHT*frame_mult/2)+TABLE_SIDE_SIZE_HEIGHT/2;
-      table.add(upFrame);
-      downFrame = new THREE.Mesh(height_frame_geometry, frame_material);
-      downFrame.position.z = (downSide.position.z-TABLE_SIDE_SIZE_HEIGHT*frame_mult/2)-TABLE_SIDE_SIZE_HEIGHT/2;
-      table.add(downFrame);
-   });
+    // Frame of Table(Geometry, Material)
+    loader.load('images/table.jpg', function ( texture ) {
+    var frame_mult = 2;
+    var width_frame_geometry = new THREE.BoxGeometry(TABLE_SIDE_SIZE_WIDTH*frame_mult, TABLE_SIDE_SIZE_DEPTH, TABLE_SIZE_HEIGHT+TABLE_SIDE_SIZE_HEIGHT*2+TABLE_SIDE_SIZE_WIDTH*frame_mult*2);
+    var height_frame_geometry = new THREE.BoxGeometry(TABLE_SIZE_WIDTH+TABLE_SIDE_SIZE_WIDTH*2, TABLE_SIDE_SIZE_DEPTH, TABLE_SIDE_SIZE_HEIGHT*frame_mult);
+    var frame_material = new THREE.MeshPhongMaterial({map: texture, overdraw: 0.5});
+    // Frame of Table(Mesh, Position)
+    leftFrame = new THREE.Mesh(width_frame_geometry, frame_material);
+    leftFrame.position.x = (leftSide.position.x-TABLE_SIDE_SIZE_WIDTH*frame_mult/2)-TABLE_SIDE_SIZE_WIDTH/2;
+    table.add(leftFrame);
+    rightFrame = new THREE.Mesh(width_frame_geometry, frame_material);
+    rightFrame.position.x = (rightSide.position.x+TABLE_SIDE_SIZE_WIDTH*frame_mult/2)+TABLE_SIDE_SIZE_WIDTH/2;
+    table.add(rightFrame);
+    upFrame = new THREE.Mesh(height_frame_geometry, frame_material);
+    upFrame.position.z = (upSide.position.z+TABLE_SIDE_SIZE_HEIGHT*frame_mult/2)+TABLE_SIDE_SIZE_HEIGHT/2;
+    table.add(upFrame);
+    downFrame = new THREE.Mesh(height_frame_geometry, frame_material);
+    downFrame.position.z = (downSide.position.z-TABLE_SIDE_SIZE_HEIGHT*frame_mult/2)-TABLE_SIDE_SIZE_HEIGHT/2;
+    table.add(downFrame);
+    });
     ///////////////////////////////////////////////////////
     // Column of Table(Geometry, Material)
-   loader.load('images/table.jpg', function ( texture ) {
-      var col_geometry = new THREE.BoxGeometry(TABLE_COL_SIZE_WIDTH, TABLE_COL_SIZE_DEPTH, TABLE_COL_SIZE_HEIGHT);
+    loader.load('images/table.jpg', function ( texture ) {
+    var col_geometry = new THREE.BoxGeometry(TABLE_COL_SIZE_WIDTH, TABLE_COL_SIZE_DEPTH, TABLE_COL_SIZE_HEIGHT);
     var col_material = new THREE.MeshPhongMaterial({map: texture, overdraw: 0.5});
     // Column of Table(Mesh, Position)
     column = new THREE.Mesh(col_geometry, col_material);
@@ -410,8 +413,7 @@ function init() {
     // Add table
     scene.add(table);
     table.position.copy(groundBody.position)
-   });
-
+    });
     ///////////////////////////////////////////////////////
     
 
@@ -433,14 +435,13 @@ function init() {
     camera.lookAt( 0, 0, 0 );
 }
 
-//
-
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     controls.handleResize();
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
+
 
 function animate() {
     requestAnimationFrame( animate );
