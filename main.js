@@ -1,4 +1,3 @@
-
 var dt = 1/60, R = 0.2;
 var NORMALIZE = 10;
 
@@ -314,10 +313,15 @@ function init() {
     var spotLight1 = new THREE.SpotLight( 0xFFFFFF, 1.5);
     spotLight1.position.set( 6, 12, 0 );
     spotLight1.target.position.set( 6, 0, 0 );
+   //spotLight1.target.updateMatrixWorld();
+   scene.add( spotLight1.target);
+   spotLight1.castShadow = true;
+   //spotLight1.shadowCameraVisible = true;
     var spotLight2 = new THREE.SpotLight( 0xFFFFFF, 1.5 );
     spotLight2.position.set( -6, 12, 0 );
     spotLight2.target.position.set( -6, 0, 0 );
     scene.add( spotLight2.target);
+   spotLight1.castShadow = true;
     scene.add( spotLight1 );
     scene.add( spotLight2 );
 
@@ -367,18 +371,21 @@ function init() {
     scene.add( guideLine );
 
     ///////////////////////////////////////////////////////
+    var loader = new THREE.TextureLoader();
     // Main Table Board(Geometry, Material)
+   loader.load('images/blue.jpg', function ( texture ) {
     var board_geometry = new THREE.BoxGeometry(TABLE_SIZE_WIDTH, TABLE_SIZE_DEPTH, TABLE_SIZE_HEIGHT);
-    var board_material = new THREE.MeshPhongMaterial({color: 0x2385E0});
+    var board_material = new THREE.MeshPhongMaterial({color: 0x2385E0, map: texture, overdraw: 0.5});
     // Main Table Board(Mesh)
     table = new THREE.Mesh(board_geometry, board_material);
-    ///////////////////////////////////////////////////////
+    table.receiveShadow = true;
+   ///////////////////////////////////////////////////////
     // Side of Table(Geometry, Material)
     var width_side_geometry = new THREE.BoxGeometry(TABLE_SIDE_SIZE_WIDTH, TABLE_SIDE_SIZE_DEPTH, TABLE_SIZE_HEIGHT+TABLE_SIDE_SIZE_HEIGHT*2);
     var height_side_geometry = new THREE.BoxGeometry(TABLE_SIZE_WIDTH, TABLE_SIDE_SIZE_DEPTH, TABLE_SIDE_SIZE_HEIGHT);
     var bottom_side_geometry = new THREE.BoxGeometry(TABLE_SIZE_WIDTH, (TABLE_SIDE_SIZE_DEPTH-TABLE_SIZE_DEPTH), TABLE_SIZE_HEIGHT);
-    var side_material = new THREE.MeshPhongMaterial({color: 0x2385E0});
-    var frame_mult = 2;
+    var side_material = new THREE.MeshPhongMaterial({color: 0x2385E0, map: texture, overdraw: 0.5});
+    
     // Side of Table(Mesh, Position)
     leftSide = new THREE.Mesh(width_side_geometry, side_material);
     leftSide.position.x = - (TABLE_SIZE_WIDTH/2 + TABLE_SIDE_SIZE_WIDTH/2);
@@ -395,38 +402,46 @@ function init() {
     bottomSide = new THREE.Mesh(bottom_side_geometry, side_material);
     bottomSide.position.y = -TABLE_SIZE_DEPTH/2;
     table.add(bottomSide);
-    ///////////////////////////////////////////////////////
-    // Frame of Table(Geometry, Material)
-    var width_frame_geometry = new THREE.BoxGeometry(TABLE_SIDE_SIZE_WIDTH*frame_mult, TABLE_SIDE_SIZE_DEPTH, TABLE_SIZE_HEIGHT+TABLE_SIDE_SIZE_HEIGHT*2+TABLE_SIDE_SIZE_WIDTH*frame_mult*2);
-    var height_frame_geometry = new THREE.BoxGeometry(TABLE_SIZE_WIDTH+TABLE_SIDE_SIZE_WIDTH*2, TABLE_SIDE_SIZE_DEPTH, TABLE_SIDE_SIZE_HEIGHT*frame_mult);
-    var frame_material = new THREE.MeshPhongMaterial({color: 0x463D40});
+   });
 
-    // Frame of Table(Mesh, Position)
-    leftFrame = new THREE.Mesh(width_frame_geometry, frame_material);
-    leftFrame.position.x = (leftSide.position.x-TABLE_SIDE_SIZE_WIDTH*frame_mult/2)-TABLE_SIDE_SIZE_WIDTH/2;
-    table.add(leftFrame);
-    rightFrame = new THREE.Mesh(width_frame_geometry, frame_material);
-    rightFrame.position.x = (rightSide.position.x+TABLE_SIDE_SIZE_WIDTH*frame_mult/2)+TABLE_SIDE_SIZE_WIDTH/2;
-    table.add(rightFrame);
-    upFrame = new THREE.Mesh(height_frame_geometry, frame_material);
-    upFrame.position.z = (upSide.position.z+TABLE_SIDE_SIZE_HEIGHT*frame_mult/2)+TABLE_SIDE_SIZE_HEIGHT/2;
-    table.add(upFrame);
-    downFrame = new THREE.Mesh(height_frame_geometry, frame_material);
-    downFrame.position.z = (downSide.position.z-TABLE_SIDE_SIZE_HEIGHT*frame_mult/2)-TABLE_SIDE_SIZE_HEIGHT/2;
-    table.add(downFrame);
+    ///////////////////////////////////////////////////////
+     // Frame of Table(Geometry, Material)
+   loader.load('images/table.jpg', function ( texture ) {
+     var frame_mult = 2;
+      var width_frame_geometry = new THREE.BoxGeometry(TABLE_SIDE_SIZE_WIDTH*frame_mult, TABLE_SIDE_SIZE_DEPTH, TABLE_SIZE_HEIGHT+TABLE_SIDE_SIZE_HEIGHT*2+TABLE_SIDE_SIZE_WIDTH*frame_mult*2);
+      var height_frame_geometry = new THREE.BoxGeometry(TABLE_SIZE_WIDTH+TABLE_SIDE_SIZE_WIDTH*2, TABLE_SIDE_SIZE_DEPTH, TABLE_SIDE_SIZE_HEIGHT*frame_mult);
+      var frame_material = new THREE.MeshPhongMaterial({map: texture, overdraw: 0.5});
+      // Frame of Table(Mesh, Position)
+       leftFrame = new THREE.Mesh(width_frame_geometry, frame_material);
+      leftFrame.position.x = (leftSide.position.x-TABLE_SIDE_SIZE_WIDTH*frame_mult/2)-TABLE_SIDE_SIZE_WIDTH/2;
+      table.add(leftFrame);
+      rightFrame = new THREE.Mesh(width_frame_geometry, frame_material);
+      rightFrame.position.x = (rightSide.position.x+TABLE_SIDE_SIZE_WIDTH*frame_mult/2)+TABLE_SIDE_SIZE_WIDTH/2;
+      table.add(rightFrame);
+      upFrame = new THREE.Mesh(height_frame_geometry, frame_material);
+      upFrame.position.z = (upSide.position.z+TABLE_SIDE_SIZE_HEIGHT*frame_mult/2)+TABLE_SIDE_SIZE_HEIGHT/2;
+      table.add(upFrame);
+      downFrame = new THREE.Mesh(height_frame_geometry, frame_material);
+      downFrame.position.z = (downSide.position.z-TABLE_SIDE_SIZE_HEIGHT*frame_mult/2)-TABLE_SIDE_SIZE_HEIGHT/2;
+      table.add(downFrame);
+   });
     ///////////////////////////////////////////////////////
     // Column of Table(Geometry, Material)
-    var col_geometry = new THREE.BoxGeometry(TABLE_COL_SIZE_WIDTH, TABLE_COL_SIZE_DEPTH, TABLE_COL_SIZE_HEIGHT);
-    var col_material = new THREE.MeshPhongMaterial({color: 0x810000});
+   loader.load('images/table.jpg', function ( texture ) {
+      var col_geometry = new THREE.BoxGeometry(TABLE_COL_SIZE_WIDTH, TABLE_COL_SIZE_DEPTH, TABLE_COL_SIZE_HEIGHT);
+    var col_material = new THREE.MeshPhongMaterial({map: texture, overdraw: 0.5});
     // Column of Table(Mesh, Position)
     column = new THREE.Mesh(col_geometry, col_material);
     column.position.y = bottomSide.position.y - TABLE_COL_SIZE_DEPTH/2;
     table.add(column);
-    table.position.copy(groundBody.position)
     ///////////////////////////////////////////////////////
     // Add table
     scene.add(table);
+   });
+
+    table.geometry.position.copy(groundBody.position)
     ///////////////////////////////////////////////////////
+    
 
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
