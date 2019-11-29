@@ -75,7 +75,7 @@ var paddleWidth = 75;
 
 var collisionInfo = [[0,0,0],[0,0,0]]//contect info w([0]),y([1]) ball [r1,r2,otherball]
 var score = [0,0]//score[w,y]
-var now_turn = 1
+var now_turn = 0
 var gaming = 0
 var init_gaming = 0
 
@@ -460,7 +460,7 @@ function animate() {
     p1_score.innerHTML = score[0];
     p2_score.innerHTML = score[1];
     if(init_gaming > 0){
-        if(now_turn == 0){
+        if(now_turn == 1){
             p1_score.style.background = "#FFE400";
             p2_score.style.background = "#FFFFFF";
         }
