@@ -284,21 +284,34 @@ function init() {
 
     controls.keys = [ 65, 83, 68 ];
 
-    // SpotLight( color : Integer, intensity : Float, distance : Float, angle : Radians, penumbra : Float, decay : Float )
-    var spotLight1 = new THREE.SpotLight( 0xFFFFFF, 2);
-    spotLight1.position.set( 6, 12, 0 );
-    spotLight1.target.position.set( 6, 0, 0 );
-    // spotLight1.target.updateMatrixWorld();
-    scene.add( spotLight1.target);
-    spotLight1.castShadow = true;
-    // spotLight1.shadowCameraVisible = true;
-    var spotLight2 = new THREE.SpotLight( 0xFFFFFF, 2);
-    spotLight2.position.set( -6, 12, 0 );
-    spotLight2.target.position.set( -6, 0, 0 );
-    scene.add( spotLight2.target);
-    spotLight1.castShadow = true;
-    scene.add( spotLight1 );
-    scene.add( spotLight2 );
+    // lights
+    var light, materials;
+    scene.add( new THREE.AmbientLight( 0x000000 ) );
+    light = new THREE.DirectionalLight( 0xffffff, 1.1 );
+    light.position.set( 5, 5, 15 );
+    scene.add( light );
+
+    //SpotLight( color : Integer, intensity : Float, distance : Float, angle : Radians, penumbra : Float, decay : Float )
+	var spotLight1 = new THREE.SpotLight(  0xFFFFFF, 3);
+	spotLight1.position.set( 6, 8, 0 );
+	spotLight1.target.position.set( 6, 0, 0 );
+	scene.add( spotLight1 );
+	scene.add( spotLight1.target);
+	var spotLight2 = new THREE.SpotLight( 0xFFFFFF, 3 );
+	spotLight2.position.set( -6, 8, 0 );
+	spotLight2.target.position.set( -6, 0, 0 );
+	scene.add( spotLight2.target);
+	scene.add( spotLight2 );
+	var spotLight3 = new THREE.SpotLight( 0xFFFFFF, 1 );
+	spotLight3.position.set( 0, 30, 0 );
+	spotLight3.target.position.set( 0, 0, 0 );
+	spotLight3.castShadow = true;
+	spotLight3.shadowMapWidth = 2048;
+	spotLight3.shadowMapHeight = 2048;
+	spotLight3.shadowCameraNear = 2;
+	spotLight3.shadowCameraFar = 1000;
+	scene.add( spotLight3.target);
+	scene.add( spotLight3 );
 
     // White ball
     var ballGeo_w = new THREE.SphereGeometry( ballSize, 20, 20 );
