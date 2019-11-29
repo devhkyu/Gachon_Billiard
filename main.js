@@ -142,7 +142,7 @@ function initCannon(){
             restitution: 0.5
     });
     var bngContactMaterial = new CANNON.ContactMaterial(ballMaterial, groundMaterial,{
-        friction: 0.001,
+        friction: 0.01,
         restitution: 0.3
     })
     var bnwContactMaterial = new CANNON.ContactMaterial(ballMaterial, wallMaterial,{
@@ -292,42 +292,47 @@ function init() {
     scene.add( light );
 
     //SpotLight( color : Integer, intensity : Float, distance : Float, angle : Radians, penumbra : Float, decay : Float )
-	var spotLight1 = new THREE.SpotLight(  0xFFFFFF, 3);
-	spotLight1.position.set( 6, 8, 0 );
-	spotLight1.target.position.set( 6, 0, 0 );
-	scene.add( spotLight1 );
-	scene.add( spotLight1.target);
-	var spotLight2 = new THREE.SpotLight( 0xFFFFFF, 3 );
-	spotLight2.position.set( -6, 8, 0 );
-	spotLight2.target.position.set( -6, 0, 0 );
-	scene.add( spotLight2.target);
-	scene.add( spotLight2 );
-	var spotLight3 = new THREE.SpotLight( 0xFFFFFF, 1 );
-	spotLight3.position.set( 0, 30, 0 );
-	spotLight3.target.position.set( 0, 0, 0 );
-	spotLight3.castShadow = true;
-	spotLight3.shadowMapWidth = 2048;
-	spotLight3.shadowMapHeight = 2048;
-	spotLight3.shadowCameraNear = 2;
-	spotLight3.shadowCameraFar = 1000;
-	scene.add( spotLight3.target);
-	scene.add( spotLight3 );
+   var spotLight1 = new THREE.SpotLight(  0xFFFFFF, 3);
+   spotLight1.position.set( 6, 8, 0 );
+   spotLight1.target.position.set( 6, 0, 0 );
+   scene.add( spotLight1 );
+   scene.add( spotLight1.target);
+   var spotLight2 = new THREE.SpotLight( 0xFFFFFF, 3 );
+   spotLight2.position.set( -6, 8, 0 );
+   spotLight2.target.position.set( -6, 0, 0 );
+   scene.add( spotLight2.target);
+   scene.add( spotLight2 );
+   var spotLight3 = new THREE.SpotLight( 0xFFFFFF, 1 );
+   spotLight3.position.set( 0, 30, 0 );
+   spotLight3.target.position.set( 0, 0, 0 );
+   spotLight3.castShadow = true;
+   spotLight3.shadowMapWidth = 2048;
+   spotLight3.shadowMapHeight = 2048;
+   spotLight3.shadowCameraNear = 2;
+   spotLight3.shadowCameraFar = 1000;
+   scene.add( spotLight3.target);
+   scene.add( spotLight3 );
 
+   var loader = new THREE.TextureLoader();
     // White ball
+    loader.load('images/whiteball.jpg', function ( texture ) { 
     var ballGeo_w = new THREE.SphereGeometry( ballSize, 20, 20 );
-    var ballMaterial_w = new THREE.MeshPhongMaterial( { color: 0xFFFFFF,specular:0x777777, shininess: 50, reflectivity: 1.0} );
+    var ballMaterial_w = new THREE.MeshPhongMaterial( { color: 0xFFFFFF,map : texture,specular:0x777777, shininess: 50, reflectivity: 1.0} );
     sphereMesh_w = new THREE.Mesh( ballGeo_w, ballMaterial_w );
     sphereMesh_w.castShadow = true;
     //sphereMesh.receiveShadow = true;
-    scene.add( sphereMesh_w );
+     scene.add( sphereMesh_w );
+    });
 
     // Yellow ball 1
+   loader.load('images/yellowball.jpg', function ( texture ) { 
     var ballGeo_y = new THREE.SphereGeometry( ballSize, 20, 20 );
-    var ballMaterial_y = new THREE.MeshPhongMaterial( { color: 0xFFFF00,specular:0x777777, shininess: 50, reflectivity: 1.0 } );
+    var ballMaterial_y = new THREE.MeshPhongMaterial( { color: 0xFFFF00,map : texture,specular:0x777777, shininess: 50, reflectivity: 1.0 } );
     sphereMesh_y = new THREE.Mesh( ballGeo_y, ballMaterial_y );
     sphereMesh_y.castShadow = true;
     //sphereMesh.receiveShadow = true;
     scene.add( sphereMesh_y );
+   });
 
     // Yellow ball 2
     var ballGeo_r1 = new THREE.SphereGeometry( ballSize, 20, 20 );
@@ -359,7 +364,6 @@ function init() {
     scene.add( guideLine );
 
     ///////////////////////////////////////////////////////
-    var loader = new THREE.TextureLoader();
     // Main Table Board(Geometry, Material)
     loader.load('images/blue.jpg', function ( texture ) {
     var board_geometry = new THREE.BoxGeometry(TABLE_SIZE_WIDTH, TABLE_SIZE_DEPTH, TABLE_SIZE_HEIGHT);
@@ -470,52 +474,59 @@ function animate() {
 }
 
 function render() {
-    sphereMesh_w.position.copy(sphereBody_w.position);
-    sphereMesh_y.position.copy(sphereBody_y.position);
-    sphereMesh_r1.position.copy(sphereBody_r1.position);
-    sphereMesh_r2.position.copy(sphereBody_r2.position);
-    var y = 1.3
-    if(Math.abs(sphereBody_w.velocity.z) + Math.abs(sphereBody_w.velocity.x) > 0.05 || Math.abs(sphereBody_y.velocity.z) + Math.abs(sphereBody_y.velocity.x) > 0.05
-        || Math.abs(sphereBody_r1.velocity.z) + Math.abs(sphereBody_r1.velocity.x) > 0.05 || Math.abs(sphereBody_r2.velocity.z) + Math.abs(sphereBody_r2.velocity.x) > 0.05){
-        y = -1
-        gaming = 1
-    }else{
-        y = 1.3
-        if(gaming == 1){
-            //scoreing
-            if(collisionInfo[now_turn][2] == 1 || (collisionInfo[now_turn][0] == 0 && collisionInfo[now_turn][1] == 0 && collisionInfo[now_turn][2] == 0)){
-                score[now_turn] -= 10
-                if(now_turn == 1 ){
-                    now_turn = 0
-                }else{
-                    now_turn = 1
-                }
-            }else{
-                if(collisionInfo[now_turn][0] == 1 && collisionInfo[now_turn][1] == 1){
-                    score[now_turn] += 10   
-                }else{
+    try{
+        sphereMesh_w.position.copy(sphereBody_w.position);
+        sphereMesh_y.position.copy(sphereBody_y.position);
+        sphereMesh_w.quaternion.copy(sphereBody_w.quaternion);
+        sphereMesh_y.quaternion.copy(sphereBody_y.quaternion);
+        sphereMesh_r1.position.copy(sphereBody_r1.position);
+        sphereMesh_r2.position.copy(sphereBody_r2.position);
+        var y = 1.3
+        if(Math.abs(sphereBody_w.velocity.z) + Math.abs(sphereBody_w.velocity.x) > 0.05 || Math.abs(sphereBody_y.velocity.z) + Math.abs(sphereBody_y.velocity.x) > 0.05
+            || Math.abs(sphereBody_r1.velocity.z) + Math.abs(sphereBody_r1.velocity.x) > 0.05 || Math.abs(sphereBody_r2.velocity.z) + Math.abs(sphereBody_r2.velocity.x) > 0.05){
+            y = -1
+            gaming = 1
+        }else{
+            y = 1.3
+            if(gaming == 1){
+             
+                //scoreing
+                if(collisionInfo[now_turn][2] == 1 || (collisionInfo[now_turn][0] == 0 && collisionInfo[now_turn][1] == 0 && collisionInfo[now_turn][2] == 0)){
+                    score[now_turn] -= 10
                     if(now_turn == 1 ){
                         now_turn = 0
                     }else{
                         now_turn = 1
                     }
+                }else{
+                    if(collisionInfo[now_turn][0] == 1 && collisionInfo[now_turn][1] == 1){
+                        score[now_turn] += 10   
+                    }else{
+                        if(now_turn == 1 ){
+                            now_turn = 0
+                        }else{
+                            now_turn = 1
+                        }
+                    }
                 }
+                collisionInfo = [[0,0,0],[0,0,0]]
+                console.log(score)
             }
-            collisionInfo = [[0,0,0],[0,0,0]]
-            console.log(score)
+            gaming = 0
         }
-        gaming = 0
-    }
-    var guideLinePosition
-    if(now_turn == 0){
-        guideLinePosition = sphereBody_w.position
-    }else{
-        guideLinePosition = sphereBody_y.position
-    }
+        var guideLinePosition
+        if(now_turn == 0){
+            guideLinePosition = sphereBody_w.position
+        }else{
+            guideLinePosition = sphereBody_y.position
+        }
 
-    guideLine.geometry.vertices[0] = new CANNON.Vec3(guideLinePosition.x,y,guideLinePosition.z)
-    guideLine.geometry.vertices[1] = new CANNON.Vec3(guideLinePosition.x+Math.cos(angle)*3, y, guideLinePosition.z+Math.sin(angle)*3)
-    guideLine.geometry.computeLineDistances();
-    guideLine.geometry.verticesNeedUpdate = true;
-    renderer.render( scene, camera );
+        guideLine.geometry.vertices[0] = new CANNON.Vec3(guideLinePosition.x,y,guideLinePosition.z)
+        guideLine.geometry.vertices[1] = new CANNON.Vec3(guideLinePosition.x+Math.cos(angle)*3, y, guideLinePosition.z+Math.sin(angle)*3)
+        guideLine.geometry.computeLineDistances();
+        guideLine.geometry.verticesNeedUpdate = true;
+        renderer.render( scene, camera );
+    } catch(error){
+        console.log(error)
+    } 
 }
