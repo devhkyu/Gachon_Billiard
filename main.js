@@ -75,13 +75,15 @@ var paddleWidth = 75;
 
 var collisionInfo = [[0,0,0],[0,0,0]]//contect info w([0]),y([1]) ball [r1,r2,otherball]
 var score = [0,0]//score[w,y]
-var now_turn = 0
+var now_turn = 1
 var gaming = 0
+var init_gaming = 0
 
 window.onload = function start(){
     initCannon();
     init();
     animate();
+    random_impulse();
     window.onkeydown = function(e){
         if(gaming == 0){
             if(e.which == 37){              // Left
@@ -99,22 +101,15 @@ window.onload = function start(){
     window.onkeyup = function(e){
         if(gaming == 0){
             if(e.which == 32){        // Space
-                var impulse = new CANNON.Vec3(Math.cos(angle), 0.0, Math.sin(angle));
                 if(now_turn == 0)
                     var worldPoint = sphereBody_w.position;
                 else
                     var worldPoint = sphereBody_y.position;
-                
-                impulse.normalize()
-                impulse.scale(0.665,impulse)
-                
                 var forceVec = new CANNON.Vec3(Math.cos(angle), 0.0, Math.sin(angle));
                 forceVec.normalize()
                 forceVec.scale(force,forceVec)
                 worldPoint.y = 1.154
-
                 console.log(forceVec)
-                //console.log(worldPoint)
                 if(now_turn == 0){
                     sphereBody_w.applyImpulse(forceVec, worldPoint);
                 }else{
@@ -166,7 +161,7 @@ function initCannon(){
     var sphereShape_w = new CANNON.Sphere(ballSize);
     sphereBody_w = new CANNON.Body(ball_param);
     sphereBody_w.addShape(sphereShape_w);
-    sphereBody_w.position.set(4, 1.4, 0);
+    sphereBody_w.position.set(4, 1.154, 0);
     world.addBody(sphereBody_w);
 
     sphereBody_w.addEventListener("collide",function(e){ 
@@ -188,7 +183,7 @@ function initCannon(){
     var sphereShape_y = new CANNON.Sphere(ballSize);
     sphereBody_y = new CANNON.Body(ball_param);
     sphereBody_y.addShape(sphereShape_y);
-    sphereBody_y.position.set(0, 1.4, 0);
+    sphereBody_y.position.set(0, 1.154, 0);
     world.addBody(sphereBody_y);
 
 
@@ -210,14 +205,14 @@ function initCannon(){
     var sphereShape_r1 = new CANNON.Sphere(ballSize);
     sphereBody_r1 = new CANNON.Body(ball_param);
     sphereBody_r1.addShape(sphereShape_r1);
-    sphereBody_r1.position.set(0, 1.4, 4);
+    sphereBody_r1.position.set(0, 1.154, 4);
     world.addBody(sphereBody_r1);
 
     // Create sphere
     var sphereShape_r2 = new CANNON.Sphere(ballSize);
     sphereBody_r2 = new CANNON.Body(ball_param);
     sphereBody_r2.addShape(sphereShape_r2);
-    sphereBody_r2.position.set(4, 1.4, 4);
+    sphereBody_r2.position.set(4, 1.154, 4);
     world.addBody(sphereBody_r2);
 
     // Physics table
@@ -464,13 +459,15 @@ function animate() {
     p2_score = document.getElementById('p2_score');
     p1_score.innerHTML = score[0];
     p2_score.innerHTML = score[1];
-    if(now_turn == 0){
-        p1_score.style.background = "#FFE400";
-        p2_score.style.background = "#FFFFFF";
-    }
-    else{
-        p1_score.style.background = "#FFFFFF";
-        p2_score.style.background = "#FFE400";
+    if(init_gaming > 0){
+        if(now_turn == 0){
+            p1_score.style.background = "#FFE400";
+            p2_score.style.background = "#FFFFFF";
+        }
+        else{
+            p1_score.style.background = "#FFFFFF";
+            p2_score.style.background = "#FFE400";
+        }
     }
     progress_bar = document.getElementById('main');
     progress_bar.style.width = force/(force_threshold+1)*100 + "%";
@@ -493,12 +490,12 @@ function render() {
         }else{
             y = 1.3
             if(gaming == 1){
-             
+                init_gaming += 1
                 //scoreing
                 if(collisionInfo[now_turn][2] == 1 || (collisionInfo[now_turn][0] == 0 && collisionInfo[now_turn][1] == 0 && collisionInfo[now_turn][2] == 0)){
                     if(score[now_turn]>0)
                         score[now_turn] -= 10
-                    if(now_turn == 1 ){
+                    if(now_turn >= 1 ){
                         now_turn = 0
                     }else{
                         now_turn = 1
@@ -507,7 +504,7 @@ function render() {
                     if(collisionInfo[now_turn][0] == 1 && collisionInfo[now_turn][1] == 1){
                         score[now_turn] += 10   
                     }else{
-                        if(now_turn == 1 ){
+                        if(now_turn >= 1 ){
                             now_turn = 0
                         }else{
                             now_turn = 1
@@ -534,4 +531,41 @@ function render() {
     } catch(error){
         console.log(error)
     } 
+}
+
+function random_impulse(){
+    var wp_w = sphereBody_w.position;
+    var wp_y = sphereBody_y.position;
+    var wp_r1 = sphereBody_r1.position;
+    var wp_r2 = sphereBody_r1.position;
+    wp_w.y = 1.154
+    wp_y.y = 1.154
+    wp_r1.y = 1.154
+    wp_r2.y = 1.154
+    angle1 = Math.floor(Math.random() * 10)/Math.PI;
+    angle2 = Math.floor(Math.random() * 10)/Math.PI;
+    angle3 = Math.floor(Math.random() * 10)/Math.PI;
+    angle4 = Math.floor(Math.random() * 10)/Math.PI;
+    force1 = Math.floor(Math.random() * 10);
+    force2 = Math.floor(Math.random() * 10);
+    force3 = Math.floor(Math.random() * 10);
+    force4 = Math.floor(Math.random() * 10);
+
+    var forceVec1 = new CANNON.Vec3(Math.cos(angle1), 0.0, Math.sin(angle1));
+    forceVec1.normalize()
+    forceVec1.scale(force1,forceVec1)
+    var forceVec2 = new CANNON.Vec3(Math.cos(angle2), 0.0, Math.sin(angle2));
+    forceVec2.normalize()
+    forceVec2.scale(force2,forceVec2)
+    var forceVec3 = new CANNON.Vec3(Math.cos(angle3), 0.0, Math.sin(angle3));
+    forceVec3.normalize()
+    forceVec3.scale(force3,forceVec3)
+    var forceVec4 = new CANNON.Vec3(Math.cos(angle4), 0.0, Math.sin(angle4));
+    forceVec4.normalize()
+    forceVec4.scale(force4,forceVec4)
+
+    sphereBody_w.applyImpulse(forceVec1, wp_w);
+    sphereBody_y.applyImpulse(forceVec2, wp_y);
+    sphereBody_r1.applyImpulse(forceVec3, wp_r1);
+    sphereBody_r2.applyImpulse(forceVec4, wp_r2);
 }
