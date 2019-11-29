@@ -468,6 +468,14 @@ function animate() {
     p2_score = document.getElementById('p2_score');
     p1_score.innerHTML = score[0];
     p2_score.innerHTML = score[1];
+    if(now_turn == 0){
+        p1_score.style.background = "#FFE400";
+        p2_score.style.background = "#FFFFFF";
+    }
+    else{
+        p1_score.style.background = "#FFFFFF";
+        p2_score.style.background = "#FFE400";
+    }
     progress_bar = document.getElementById('main');
     progress_bar.style.width = force/(force_threshold+1)*100 + "%";
     render();
