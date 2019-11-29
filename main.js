@@ -500,7 +500,8 @@ function render() {
              
                 //scoreing
                 if(collisionInfo[now_turn][2] == 1 || (collisionInfo[now_turn][0] == 0 && collisionInfo[now_turn][1] == 0 && collisionInfo[now_turn][2] == 0)){
-                    score[now_turn] -= 10
+                    if(score[now_turn]>0)
+                        score[now_turn] -= 10
                     if(now_turn == 1 ){
                         now_turn = 0
                     }else{
