@@ -23,26 +23,6 @@
                 text-decoration: underline;
                 cursor: pointer;
             }
-            #p1_score_div {
-                position: absolute;
-                color: #FFFFFF;
-                width: 100%;
-                height: 5%;
-                text-align: right;
-                padding-top: 2%;
-                vertical-align: center;
-                font-size: xx-large;
-            }
-            #p2_score_div {
-                position: absolute;
-                color: #FFFFFF;
-                width: 100%;
-                height: 5%;
-                text-align: right;
-                padding-top: 6%;
-                vertical-align: center;
-                font-size: xx-large;
-            }
             #center {
                 width: 600px;
                 height: 40px;
@@ -99,13 +79,81 @@
                 75% {width: 360px;}
                 100% {width: 400px;}
             }
+
+            .wrap_box {
+                position: absolute;
+                display:table;
+                width:7%;
+                height:5%;
+                left: 30px;
+                top: 20px;
+                border:1px solid #ddd; border-width:0 1px 1px 0;
+                border-width:2px;
+                margin-bottom:10px;
+                background: #000000;
+            }
+            .name_box{
+                display: table-row;
+            }
+            .score_box{
+                display: table-row;
+            }
+            .p1_name{
+                display:table-cell;
+                border:1px solid #ddd;
+                border-width:0px;
+                height:10px;
+                vertical-align:middle;
+                color: #FFFFFF;
+                font-size: large;
+                text-align: center;
+            }
+            .p2_name{
+                display:table-cell;
+                border:1px solid #ddd;
+                height:10px;
+                vertical-align:middle;
+                color: #FFFFFF;
+                font-size: large;
+                text-align: center;
+            }
+            #p1_score{
+                display:table-cell;
+                border:1px solid #ddd;
+                height:10px;
+                vertical-align:middle;
+                color: #000000;
+                font-size: large;
+                text-align: center;
+                background: #FFFFFF;
+            }
+            #p2_score{
+                display:table-cell;
+                border:1px solid #ddd;
+                height:10px;
+                vertical-align:middle;
+                color: #000000;
+                font-size: large;
+                text-align: center;
+                background: #FFFFFF;
+            }
         </style>
     </head>
 
     <body>
         <div id="p1_score_div"></div>
         <div id="p2_score_div"></div>
-        <div id="force_div"></div>
+        
+        <div class="wrap_box">
+            <div class="name_box">
+                <span class="p1_name">P1</span>
+                <span id="p1_score">0</span>
+            </div>
+            <div class="score_box">
+                <span class="p2_name">P2</span>
+                <span id="p2_score">0</span>
+            </div>
+        </div>
 
         <div id="center">
             <div id="main"></div>

@@ -460,8 +460,10 @@ function animate() {
     controls.update();
     world.step(dt);
     var t = world.time;
-    document.getElementById('p1_score_div').innerHTML = score[0]
-    document.getElementById('p2_score_div').innerHTML = score[1]
+    p1_score = document.getElementById('p1_score');
+    p2_score = document.getElementById('p2_score');
+    p1_score.innerHTML = score[0];
+    p2_score.innerHTML = score[1];
     progress_bar = document.getElementById('main');
     progress_bar.style.width = force/(force_threshold+1)*100 + "%";
     render();
