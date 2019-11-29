@@ -292,16 +292,12 @@ function init() {
     scene.add( light );
 
     //SpotLight( color : Integer, intensity : Float, distance : Float, angle : Radians, penumbra : Float, decay : Float )
-   var spotLight1 = new THREE.SpotLight(  0xFFFFFF, 3);
-   spotLight1.position.set( 6, 8, 0 );
-   spotLight1.target.position.set( 6, 0, 0 );
-   scene.add( spotLight1 );
-   scene.add( spotLight1.target);
-   var spotLight2 = new THREE.SpotLight( 0xFFFFFF, 3 );
-   spotLight2.position.set( -6, 8, 0 );
-   spotLight2.target.position.set( -6, 0, 0 );
-   scene.add( spotLight2.target);
-   scene.add( spotLight2 );
+   var positionLight = new THREE.PointLight( 0xFFFFFF, 1, 100 );
+   positionLight.position.set( 6,8,0 );
+   scene.add( positionLight );
+   var positionLight2 = new THREE.PointLight( 0xFFFFFF, 1, 100 );
+   positionLight2.position.set( -6,8,0 );
+   scene.add( positionLight2 );
    var spotLight3 = new THREE.SpotLight( 0xFFFFFF, 1 );
    spotLight3.position.set( 0, 30, 0 );
    spotLight3.target.position.set( 0, 0, 0 );
