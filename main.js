@@ -80,8 +80,8 @@ var gaming = 0
 var init_gaming = 0
 
 window.onload = function start(){
-    initCannon();
     init();
+    initCannon();
     animate();
     random_impulse();
     window.onkeydown = function(e){
@@ -148,6 +148,40 @@ function initCannon(){
     world.addContactMaterial(bngContactMaterial);
     world.addContactMaterial(bnwContactMaterial);
 
+    var listener = new THREE.AudioListener();
+	camera.add( listener );
+
+	// create a global audio source
+	var sound1 = new THREE.Audio( listener );
+	var sound2 = new THREE.Audio( listener );
+	var sound3 = new THREE.Audio( listener );
+	var sound4 = new THREE.Audio( listener );
+	var sound5 = new THREE.Audio( listener );
+	var sound6 = new THREE.Audio( listener );
+
+	// load a sound and set it as the Audio object's buffer
+	var audioLoader = new THREE.AudioLoader();
+	audioLoader.load( 'sounds/bnb.wav', function( buffer ) {
+		sound1.setBuffer( buffer );
+		sound1.setLoop( false );
+		sound1.setVolume( 0.5 );
+		sound2.setBuffer( buffer );
+		sound2.setLoop( false );
+		sound2.setVolume( 0.5 );
+		sound3.setBuffer( buffer );
+		sound3.setLoop( false );
+		sound3.setVolume( 0.5 );
+		sound4.setBuffer( buffer );
+		sound4.setLoop( false );
+		sound4.setVolume( 0.5 );
+		sound5.setBuffer( buffer );
+		sound5.setLoop( false );
+		sound5.setVolume( 0.5 );
+		sound6.setBuffer( buffer );
+		sound6.setLoop( false );
+		sound6.setVolume( 0.5 );
+	});
+
     var ball_param = {
         mass: 0.25,
         material: ballMaterial,
@@ -168,14 +202,23 @@ function initCannon(){
         if(e.body == sphereBody_r1){
             console.log("collision white and red1")
             collisionInfo[0][0] = 1
+            console.log((1 / (1 + Math.exp(Math.abs(sphereBody_w.velocity.z) + Math.abs(sphereBody_w.velocity.x))))*2)
+            sound1.setVolume((1 / (1 + Math.exp(-Math.abs(sphereBody_w.velocity.z) - Math.abs(sphereBody_w.velocity.x))))*2)
+			sound1.play();
         }
         if(e.body == sphereBody_r2){
             console.log("collision white and red2")
             collisionInfo[0][1] = 1
+            console.log((1 / (1 + Math.exp(Math.abs(sphereBody_w.velocity.z) + Math.abs(sphereBody_w.velocity.x))))*2)
+            sound2.setVolume((1 / (1 + Math.exp(-Math.abs(sphereBody_w.velocity.z) - Math.abs(sphereBody_w.velocity.x))))*2)
+			sound2.play();
         }
         if(e.body == sphereBody_y){
             console.log("collision white and yellow")
             collisionInfo[0][2] = 1
+            console.log((1 / (1 + Math.exp(Math.abs(sphereBody_w.velocity.z) + Math.abs(sphereBody_w.velocity.x))))*2)
+            sound3.setVolume((1 / (1 + Math.exp(-Math.abs(sphereBody_w.velocity.z) - Math.abs(sphereBody_w.velocity.x))))*2)
+			sound3.play();
         }
     });
 
@@ -191,10 +234,14 @@ function initCannon(){
         if(e.body == sphereBody_r1){
             console.log("collision yellow and red1")
             collisionInfo[1][0] = 1
+            sound4.setVolume((1 / (1 + Math.exp(-Math.abs(sphereBody_y.velocity.z) - Math.abs(sphereBody_y.velocity.x))))*2)
+			sound4.play();
         }
         if(e.body == sphereBody_r2){
             console.log("collision yellow and red2")
             collisionInfo[1][1] = 1
+            sound5.setVolume((1 / (1 + Math.exp(-Math.abs(sphereBody_y.velocity.z) - Math.abs(sphereBody_y.velocity.x))))*2)
+			sound5.play();
         }
         if(e.body == sphereBody_w){
             console.log("collision white and yellow")
@@ -207,6 +254,14 @@ function initCannon(){
     sphereBody_r1.addShape(sphereShape_r1);
     sphereBody_r1.position.set(0, 1.154, 4);
     world.addBody(sphereBody_r1);
+    sphereBody_r1.addEventListener("collide",function(e){ 
+        if(e.body == sphereBody_r2){
+            console.log("collision yellow and red2")
+            collisionInfo[1][1] = 1
+            sound6.setVolume((1 / (1 + Math.exp(-Math.abs(sphereBody_y.velocity.z) - Math.abs(sphereBody_y.velocity.x))))*2)
+			sound6.play();
+        }
+    });
 
     // Create sphere
     var sphereShape_r2 = new CANNON.Sphere(ballSize);
@@ -236,6 +291,8 @@ function initCannon(){
     down_groundBody = new CANNON.Body({ mass: 0,
         material: wallMaterial  });
     down_groundBody.addShape(table_side_height_phys);
+
+   
 
     left_groundBody.position.set(-(TABLE_SIZE_WIDTH/2 + TABLE_SIDE_SIZE_WIDTH/2),-0.5,0);
     right_groundBody.position.set(+(TABLE_SIZE_WIDTH/2 + TABLE_SIDE_SIZE_WIDTH/2),-0.5,0);
@@ -349,7 +406,6 @@ function init() {
         gapSize: 0.1
     } );
     guideLineGeometry = new THREE.Geometry({verticesNeedUpdate: true});
-    guideLineGeometry.computeLineDistances();
     guideLineGeometry.vertices.push((0, 0, 0),new CANNON.Vec3(Math.cos(angle)*force, 0, Math.sin(angle)*force));
     guideLine = new THREE.Line(guideLineGeometry,guideLineMeterial)
     scene.add( guideLine );
@@ -528,12 +584,10 @@ function render() {
                 }
                 guideLine.geometry.vertices[0] = new CANNON.Vec3(guideLinePosition.x,y,guideLinePosition.z)
                 guideLine.geometry.vertices[1] = new CANNON.Vec3(guideLinePosition.x+Math.cos(angle)*3, y, guideLinePosition.z+Math.sin(angle)*3)
-                guideLine.geometry.computeLineDistances();
                 guideLine.geometry.verticesNeedUpdate = true;
             }else{
                 guideLine.geometry.vertices[0] = new CANNON.Vec3(-1000, -1000, -1000)
                 guideLine.geometry.vertices[1] = new CANNON.Vec3(-1000, -1000, -1000)
-                guideLine.geometry.computeLineDistances();
                 guideLine.geometry.verticesNeedUpdate = true;
             }
         }else{
