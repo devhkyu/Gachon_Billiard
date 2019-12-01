@@ -350,7 +350,7 @@ function init() {
     } );
     guideLineGeometry = new THREE.Geometry({verticesNeedUpdate: true});
     guideLineGeometry.computeLineDistances();
-    guideLineGeometry.vertices.push(sphereBody_w.position,new CANNON.Vec3(Math.cos(angle)*force, 0, Math.sin(angle)*force));
+    guideLineGeometry.vertices.push((0, 0, 0),new CANNON.Vec3(Math.cos(angle)*force, 0, Math.sin(angle)*force));
     guideLine = new THREE.Line(guideLineGeometry,guideLineMeterial)
     scene.add( guideLine );
 
@@ -457,9 +457,9 @@ function animate() {
     var t = world.time;
     p1_score = document.getElementById('p1_score');
     p2_score = document.getElementById('p2_score');
-    p1_score.innerHTML = score[0];
-    p2_score.innerHTML = score[1];
-    if(init_gaming > 0){
+    p1_score.innerHTML = score[1];
+    p2_score.innerHTML = score[0];
+    if(init_gaming == 1){
         if(now_turn == 1){
             p1_score.style.background = "#FFE400";
             p2_score.style.background = "#FFFFFF";
@@ -468,6 +468,9 @@ function animate() {
             p1_score.style.background = "#FFFFFF";
             p2_score.style.background = "#FFE400";
         }
+    }else{
+        p1_score.style.background = "#FFFFFF";
+        p2_score.style.background = "#FFFFFF";
     }
     progress_bar = document.getElementById('main');
     progress_bar.style.width = force/(force_threshold+1)*100 + "%";
@@ -476,6 +479,7 @@ function animate() {
 
 function render() {
     try{
+        var guideLinePosition
         sphereMesh_w.position.copy(sphereBody_w.position);
         sphereMesh_y.position.copy(sphereBody_y.position);
         sphereMesh_w.quaternion.copy(sphereBody_w.quaternion);
@@ -483,50 +487,64 @@ function render() {
         sphereMesh_r1.position.copy(sphereBody_r1.position);
         sphereMesh_r2.position.copy(sphereBody_r2.position);
         var y = 1.3
-        if(Math.abs(sphereBody_w.velocity.z) + Math.abs(sphereBody_w.velocity.x) > 0.05 || Math.abs(sphereBody_y.velocity.z) + Math.abs(sphereBody_y.velocity.x) > 0.05
-            || Math.abs(sphereBody_r1.velocity.z) + Math.abs(sphereBody_r1.velocity.x) > 0.05 || Math.abs(sphereBody_r2.velocity.z) + Math.abs(sphereBody_r2.velocity.x) > 0.05){
-            y = -1
-            gaming = 1
-        }else{
-            y = 1.3
-            if(gaming == 1){
-                init_gaming += 1
-                //scoreing
-                if(collisionInfo[now_turn][2] == 1 || (collisionInfo[now_turn][0] == 0 && collisionInfo[now_turn][1] == 0 && collisionInfo[now_turn][2] == 0)){
-                    if(score[now_turn]>0)
-                        score[now_turn] -= 10
-                    if(now_turn >= 1 ){
-                        now_turn = 0
-                    }else{
-                        now_turn = 1
-                    }
-                }else{
-                    if(collisionInfo[now_turn][0] == 1 && collisionInfo[now_turn][1] == 1){
-                        score[now_turn] += 10   
-                    }else{
+        if(init_gaming==1){
+            if(Math.abs(sphereBody_w.velocity.z) + Math.abs(sphereBody_w.velocity.x) > 0.05 || Math.abs(sphereBody_y.velocity.z) + Math.abs(sphereBody_y.velocity.x) > 0.05
+                || Math.abs(sphereBody_r1.velocity.z) + Math.abs(sphereBody_r1.velocity.x) > 0.05 || Math.abs(sphereBody_r2.velocity.z) + Math.abs(sphereBody_r2.velocity.x) > 0.05){
+                y = -1
+                gaming = 1
+            }else{
+                y = 1.3
+                if(gaming == 1){
+                    //scoreing
+                    if(collisionInfo[now_turn][2] == 1 || (collisionInfo[now_turn][0] == 0 && collisionInfo[now_turn][1] == 0 && collisionInfo[now_turn][2] == 0)){
+                        if(score[now_turn]>0)
+                            score[now_turn] -= 10
                         if(now_turn >= 1 ){
                             now_turn = 0
                         }else{
                             now_turn = 1
                         }
+                    }else{
+                        if(collisionInfo[now_turn][0] == 1 && collisionInfo[now_turn][1] == 1){
+                            score[now_turn] += 10   
+                        }else{
+                            if(now_turn >= 1 ){
+                                now_turn = 0
+                            }else{
+                                now_turn = 1
+                            }
+                        }
                     }
+                    collisionInfo = [[0,0,0],[0,0,0]]
+                    console.log(score)
                 }
-                collisionInfo = [[0,0,0],[0,0,0]]
-                console.log(score)
+                gaming = 0
             }
-            gaming = 0
-        }
-        var guideLinePosition
-        if(now_turn == 0){
-            guideLinePosition = sphereBody_w.position
+            if(gaming == 0){
+                if(now_turn == 0){
+                    guideLinePosition = sphereBody_w.position
+                }else{
+                    guideLinePosition = sphereBody_y.position
+                }
+                guideLine.geometry.vertices[0] = new CANNON.Vec3(guideLinePosition.x,y,guideLinePosition.z)
+                guideLine.geometry.vertices[1] = new CANNON.Vec3(guideLinePosition.x+Math.cos(angle)*3, y, guideLinePosition.z+Math.sin(angle)*3)
+                guideLine.geometry.computeLineDistances();
+                guideLine.geometry.verticesNeedUpdate = true;
+            }else{
+                guideLine.geometry.vertices[0] = new CANNON.Vec3(-1000, -1000, -1000)
+                guideLine.geometry.vertices[1] = new CANNON.Vec3(-1000, -1000, -1000)
+                guideLine.geometry.computeLineDistances();
+                guideLine.geometry.verticesNeedUpdate = true;
+            }
         }else{
-            guideLinePosition = sphereBody_y.position
+            if(Math.abs(sphereBody_w.velocity.z) + Math.abs(sphereBody_w.velocity.x) > 0.05 || Math.abs(sphereBody_y.velocity.z) + Math.abs(sphereBody_y.velocity.x) > 0.05
+                || Math.abs(sphereBody_r1.velocity.z) + Math.abs(sphereBody_r1.velocity.x) > 0.05 || Math.abs(sphereBody_r2.velocity.z) + Math.abs(sphereBody_r2.velocity.x) > 0.05){
+                y = -1
+                gaming = 1
+            }else{
+                init_gaming = 1;
+            }
         }
-
-        guideLine.geometry.vertices[0] = new CANNON.Vec3(guideLinePosition.x,y,guideLinePosition.z)
-        guideLine.geometry.vertices[1] = new CANNON.Vec3(guideLinePosition.x+Math.cos(angle)*3, y, guideLinePosition.z+Math.sin(angle)*3)
-        guideLine.geometry.computeLineDistances();
-        guideLine.geometry.verticesNeedUpdate = true;
         renderer.render( scene, camera );
     } catch(error){
         console.log(error)
@@ -546,10 +564,10 @@ function random_impulse(){
     angle2 = Math.floor(Math.random() * 10)/Math.PI;
     angle3 = Math.floor(Math.random() * 10)/Math.PI;
     angle4 = Math.floor(Math.random() * 10)/Math.PI;
-    force1 = Math.floor(Math.random() * 10);
-    force2 = Math.floor(Math.random() * 10);
-    force3 = Math.floor(Math.random() * 10);
-    force4 = Math.floor(Math.random() * 10);
+    force1 = Math.floor(Math.random() * 10) + 1;
+    force2 = Math.floor(Math.random() * 10) + 1;
+    force3 = Math.floor(Math.random() * 10) + 1;
+    force4 = Math.floor(Math.random() * 10) + 1;
 
     var forceVec1 = new CANNON.Vec3(Math.cos(angle1), 0.0, Math.sin(angle1));
     forceVec1.normalize()
