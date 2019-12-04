@@ -8,6 +8,6 @@ Gachon Billiard
 >> 3D Rendering Library (Javascript)
 >>> https://github.com/mrdoob/three.js/archive/master.zip
 
-> ### Physijs
->> Physics Plugin for three.js
->>> https://github.com/chandlerprall/Physijs/zipball/master
+> ### Cannon js
+>> A lightweight and simple 3D physics engine for the web.
+>>> https://schteppe.github.io/cannon.js/
