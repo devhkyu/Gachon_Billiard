@@ -17,3 +17,11 @@ https://www.youtube.com/watch?v=Dy6lGOcaRKo <br>
 > ### Cannon js
 >> A lightweight and simple 3D physics engine for the web.
 >>> https://schteppe.github.io/cannon.js/
+
+## Contributors
+<i><b>Hyungkyu Choi</b><br>
+  Table Rendering, HTML/CSS, Impulse ball<br><br>
+<b>Gyunyop Kim</b><br>
+  Merge Code, Physical Event, Gaming-Rule<br><br>
+<b>Yerin Hong</b><br>
+  Texture, Light, 4-Ball Rendering<br></i>
