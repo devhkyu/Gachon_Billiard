@@ -2,11 +2,11 @@ Gachon Billiard
 =======
 *This is a term-project for computer graphics in Gachon University.*
 <br><br>
-![gb](https://user-images.githubusercontent.com/44195740/70368370-106b3a80-18ed-11ea-8b30-a23368ee234f.png)
+![gb](https://user-images.githubusercontent.com/44195740/70368370-106b3a80-18ed-11ea-8b30-a23368ee234f.png)<br><br>
 
 
 ## Demo Video (YouTube)
-https://www.youtube.com/watch?v=Dy6lGOcaRKo <br>
+https://www.youtube.com/watch?v=Dy6lGOcaRKo <br><br><br>
 
 ## Download files to render Graphics
 
@@ -16,7 +16,7 @@ https://www.youtube.com/watch?v=Dy6lGOcaRKo <br>
 
 > ### Cannon js
 >> A lightweight and simple 3D physics engine for the web.
->>> https://schteppe.github.io/cannon.js/
+>>> https://schteppe.github.io/cannon.js/<br><br><br>
 
 ## Contributors
 <i><b>Hyungkyu Choi</b><br>
