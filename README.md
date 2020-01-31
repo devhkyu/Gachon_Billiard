@@ -9,14 +9,15 @@ Gachon Billiard
 https://www.youtube.com/watch?v=Dy6lGOcaRKo <br><br><br>
 
 ## Download files to render Graphics
-
+![threejs](https://img.shields.io/badge/Three.js-r133%2B-green.svg)
+![cannon](https://img.shields.io/badge/Cannon.js-0.6.1%2B-green.svg)
 > ### Threejs
->> 3D Rendering Library (Javascript)
->>> https://github.com/mrdoob/three.js/archive/master.zip
+- 3D Rendering Library (Javascript)
+- https://github.com/mrdoob/three.js/archive/master.zip
 
 > ### Cannon js
->> A lightweight and simple 3D physics engine for the web.
->>> https://schteppe.github.io/cannon.js/<br><br><br>
+- A lightweight and simple 3D physics engine for the web.
+- https://schteppe.github.io/cannon.js/<br><br><br>
 
 ## Contributors
 <i><b>Hyungkyu Choi</b><br>
