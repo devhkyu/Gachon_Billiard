@@ -6,7 +6,7 @@ Gachon Billiard
 
 
 ## Demo Video (YouTube)
-https://www.youtube.com/watch?v=Dy6lGOcaRKo <br><br><br>
+[![demo](https://img.youtube.com/vi/Dy6lGOcaRKo/0.jpg)](https://www.youtube.com/watch?v=Dy6lGOcaRKo) <br><br><br>
 
 ## Download files to render Graphics
 ![threejs](https://img.shields.io/badge/Three.js-r133%2B-green.svg)
